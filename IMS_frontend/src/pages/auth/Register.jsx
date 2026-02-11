@@ -1,0 +1,135 @@
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { Eye, EyeOff } from "lucide-react";
+
+const API_BASE = "http://localhost:5000";
+
+function Register() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+
+  const [showPassword, setShowPassword] = useState(false);
+
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const res = await fetch(`${API_BASE}/api/auth/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      toast.error(data.message || "Registration failed");
+      return;
+    }
+
+    toast.success("Registration successful");
+
+    setTimeout(() => {
+      navigate("/");
+    }, 800);
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-white">
+      <div className="w-full max-w-sm">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-2xl font-semibold text-gray-900">
+            Create an account
+          </h1>
+          <p className="text-sm text-gray-500 mt-1">
+            Enter your details to get started.
+          </p>
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="text-sm text-gray-600">Name</label>
+            <input
+              type="text"
+              name="name"
+              placeholder="Enter your name"
+              required
+              value={formData.name}
+              onChange={handleChange}
+              className="w-full mt-1 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-slate-700"
+            />
+          </div>
+
+          <div>
+            <label className="text-sm text-gray-600">Email</label>
+            <input
+              type="email"
+              name="email"
+              placeholder="Enter your email"
+              required
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full mt-1 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-slate-700"
+            />
+          </div>
+
+          <div>
+            <label className="text-sm text-gray-600">Password</label>
+
+            <div className="relative mt-1">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Create a password"
+                required
+                value={formData.password}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border rounded-md pr-10 focus:outline-none focus:ring-2 focus:ring-slate-700"
+              />
+
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-3 flex items-center text-gray-500"
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+          </div>
+
+          {/* Sign up */}
+          <button
+            type="submit"
+            className="w-full bg-slate-800 text-white py-2.5 rounded-md font-medium hover:bg-slate-900 transition"
+          >
+            Sign up
+          </button>
+        </form>
+
+        {/* Footer */}
+        <p className="text-center text-sm text-gray-600 mt-6">
+          Already have an account?{" "}
+          <Link to="/" className="font-semibold text-slate-800">
+            Sign in
+          </Link>
+        </p>
+      </div>
+    </div>
+  );
+}
+
+export default Register;
