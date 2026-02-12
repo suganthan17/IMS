@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -26,7 +26,7 @@ import UpdateStatus from "./pages/Admin/UpdateStatus";
 /* Staff Pages */
 import StaffDashboard from "./pages/Staff/StaffDashboard";
 
-/* 🔐 Protected Route */
+/* Protected Route */
 const ProtectedRoute = ({ children, role }) => {
   const token = localStorage.getItem("token");
   const userRole = localStorage.getItem("role");
@@ -36,20 +36,26 @@ const ProtectedRoute = ({ children, role }) => {
   }
 
   if (role && userRole !== role) {
-    // redirect to correct dashboard instead of login
-    return userRole === "admin" ? (
-      <Navigate to="/admin/dashboard" replace />
-    ) : (
-      <Navigate to="/user/dashboard" replace />
-    );
+    return <Navigate to="/" replace />;
   }
 
   return children;
 };
 
 function App() {
-  const token = localStorage.getItem("token");
-  const role = localStorage.getItem("role");
+  const [token, setToken] = useState(localStorage.getItem("token"));
+  const [role, setRole] = useState(localStorage.getItem("role"));
+
+  useEffect(() => {
+    const syncAuth = () => {
+      setToken(localStorage.getItem("token"));
+      setRole(localStorage.getItem("role"));
+    };
+
+    window.addEventListener("storage", syncAuth);
+
+    return () => window.removeEventListener("storage", syncAuth);
+  }, []);
 
   return (
     <Router>
@@ -61,6 +67,8 @@ function App() {
             token ? (
               role === "admin" ? (
                 <Navigate to="/admin/dashboard" replace />
+              ) : role === "maintenance" ? (
+                <Navigate to="/staff/dashboard" replace />
               ) : (
                 <Navigate to="/user/dashboard" replace />
               )
@@ -70,6 +78,7 @@ function App() {
           }
         />
         <Route path="/register" element={<Register />} />
+
         {/* USER ROUTES */}
         <Route
           path="/user/dashboard"
@@ -111,6 +120,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+
         {/* ADMIN ROUTES */}
         <Route
           path="/admin/dashboard"
@@ -144,7 +154,8 @@ function App() {
             </ProtectedRoute>
           }
         />
-        /* STAFF ROUTES */
+
+        {/* STAFF ROUTES */}
         <Route
           path="/staff/dashboard"
           element={
@@ -153,7 +164,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-        {/* FALLBACK */}
+
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
