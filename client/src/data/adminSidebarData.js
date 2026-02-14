@@ -22,8 +22,8 @@ const adminSidebarData = [
     icon: Users,
   },
   {
-    name: "Update Details",
-    path: "/admin/update-details",
+    name: "Assign Complaints",
+    path: "/admin/assign-complaints",
     icon: Edit,
   },
 ];

@@ -12,32 +12,48 @@ function AdminDashboard() {
   const [maintenanceStaff, setMaintenanceStaff] = useState(0);
   const [pendingComplaints, setPendingComplaints] = useState(0);
   const [resolvedComplaints, setResolvedComplaints] = useState(0);
+  const [assignedComplaints, setAssignedComplaints] = useState(0);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/users")
+    const token = localStorage.getItem("token");
+
+    fetch("http://localhost:5000/api/users", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
-          setTotalUsers(data.users.length);
+          const users = data.users;
+
+          setTotalUsers(users.filter((u) => u.role === "user").length);
+
           setMaintenanceStaff(
-            data.users.filter((u) => u.role === "maintenance").length,
+            users.filter((u) => u.role === "maintenance").length,
           );
         }
       })
       .catch((err) => console.error(err));
 
-    // Complaints
-    fetch("http://localhost:5000/api/complaints")
+    fetch("http://localhost:5000/api/complaints", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
           const complaints = data.complaints;
+
           setTotalComplaints(complaints.length);
+
           setPendingComplaints(
             complaints.filter((c) => c.status === "Pending").length,
           );
+
           setResolvedComplaints(
             complaints.filter((c) => c.status === "Resolved").length,
+          );
+
+          setAssignedComplaints(
+            complaints.filter((c) => c.status === "Assigned").length,
           );
         }
       })
@@ -45,80 +61,80 @@ function AdminDashboard() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div>
       <Navbar />
+      <AdminSidebar />
 
-      <div className="flex">
-        <AdminSidebar />
+      <div className="ml-56 mt-14 p-6 min-h-screen bg-gray-100">
+        <h1 className="text-xl font-bold mb-4">Admin Dashboard</h1>
 
-        <div className="flex-1 p-6">
-          <h1 className="text-xl font-bold mb-4">Admin Dashboard</h1>
-
-          <div className="flex flex-wrap gap-4 mt-6 mb-6">
-            {/* 1. Total Users */}
-            <div
-              onClick={() => navigate("/admin/users")}
-              className="w-full sm:w-[48%] lg:w-[23%] bg-white border border-gray-300 rounded p-4 cursor-pointer hover:bg-gray-50 flex justify-between items-center"
-            >
-              <div>
-                <p className="text-sm text-gray-600">Total Users</p>
-                <p className="text-2xl font-bold">{totalUsers}</p>
-              </div>
-              <ArrowUpRight size={18} className="text-gray-500" />
+        <div className="flex flex-wrap gap-4 mt-6 mb-6">
+          <div className="w-full sm:w-[48%] lg:w-[23%] bg-white border border-gray-300 rounded p-4 cursor-pointer hover:bg-gray-50 flex justify-between items-center">
+            <div>
+              <p className="text-sm text-gray-600">Total Users</p>
+              <p className="text-2xl font-bold">{totalUsers}</p>
             </div>
+            <ArrowUpRight size={18} className="text-gray-500" />
+          </div>
 
-            {/* 2. Total Complaints */}
-            <div
-              onClick={() => navigate("/admin/complaints")}
-              className="w-full sm:w-[48%] lg:w-[23%] bg-white border border-gray-300 rounded p-4 cursor-pointer hover:bg-gray-50 flex justify-between items-center"
-            >
-              <div>
-                <p className="text-sm text-gray-600">Total Complaints</p>
-                <p className="text-2xl font-bold">{totalComplaints}</p>
-              </div>
-              <ArrowUpRight size={18} className="text-gray-500" />
+          <div
+            onClick={() => navigate("/admin/complaints")}
+            className="w-full sm:w-[48%] lg:w-[23%] bg-white border border-gray-300 rounded p-4 cursor-pointer hover:bg-gray-50 flex justify-between items-center"
+          >
+            <div>
+              <p className="text-sm text-gray-600">Total Complaints</p>
+              <p className="text-2xl font-bold">{totalComplaints}</p>
             </div>
+            <ArrowUpRight size={18} className="text-gray-500" />
+          </div>
 
-            {/* 3. Maintenance Staff */}
-            <div
-              onClick={() => navigate("/admin/staff")}
-              className="w-full sm:w-[48%] lg:w-[23%] bg-white border border-gray-300 rounded p-4 cursor-pointer hover:bg-gray-50 flex justify-between items-center"
-            >
-              <div>
-                <p className="text-sm text-gray-600">Maintenance Staff</p>
-                <p className="text-2xl font-bold">{maintenanceStaff}</p>
-              </div>
-              <ArrowUpRight size={18} className="text-gray-500" />
+          <div
+            onClick={() => navigate("/admin/manage-staff")}
+            className="w-full sm:w-[48%] lg:w-[23%] bg-white border border-gray-300 rounded p-4 cursor-pointer hover:bg-gray-50 flex justify-between items-center"
+          >
+            <div>
+              <p className="text-sm text-gray-600">Maintenance Staff</p>
+              <p className="text-2xl font-bold">{maintenanceStaff}</p>
             </div>
+            <ArrowUpRight size={18} className="text-gray-500" />
+          </div>
 
-            {/* 4. Pending Complaints */}
-            <div
-              onClick={() => navigate("/admin/complaints")}
-              className="w-full sm:w-[48%] lg:w-[23%] bg-white border border-gray-300 rounded p-4 cursor-pointer hover:bg-gray-50 flex justify-between items-center"
-            >
-              <div>
-                <p className="text-sm text-gray-600">Pending Complaints</p>
-                <p className="text-2xl font-bold">{pendingComplaints}</p>
-              </div>
-              <ArrowUpRight size={18} className="text-gray-500" />
+          <div
+            onClick={() => navigate("/admin/assign-complaints")}
+            className="w-full sm:w-[48%] lg:w-[23%] bg-white border border-gray-300 rounded p-4 cursor-pointer hover:bg-gray-50 flex justify-between items-center"
+          >
+            <div>
+              <p className="text-sm text-gray-600">Total Assigned</p>
+              <p className="text-2xl font-bold">{assignedComplaints}</p>
             </div>
+            <ArrowUpRight size={18} className="text-gray-500" />
+          </div>
 
-            {/* 5. Resolved Complaints */}
-            <div
-              onClick={() => navigate("/admin/complaints")}
-              className="w-full sm:w-[48%] lg:w-[23%] bg-white border border-gray-300 rounded p-4 cursor-pointer hover:bg-gray-50 flex justify-between items-center"
-            >
-              <div>
-                <p className="text-sm text-gray-600">Resolved Complaints</p>
-                <p className="text-2xl font-bold">{resolvedComplaints}</p>
-              </div>
-              <ArrowUpRight size={18} className="text-gray-500" />
+          <div
+            onClick={() => navigate("/admin/complaints")}
+            className="w-full sm:w-[48%] lg:w-[23%] bg-white border border-gray-300 rounded p-4 cursor-pointer hover:bg-gray-50 flex justify-between items-center"
+          >
+            <div>
+              <p className="text-sm text-gray-600">Pending Complaints</p>
+              <p className="text-2xl font-bold">{pendingComplaints}</p>
             </div>
+            <ArrowUpRight size={18} className="text-gray-500" />
+          </div>
+
+          <div
+            onClick={() => navigate("/admin/complaints")}
+            className="w-full sm:w-[48%] lg:w-[23%] bg-white border border-gray-300 rounded p-4 cursor-pointer hover:bg-gray-50 flex justify-between items-center"
+          >
+            <div>
+              <p className="text-sm text-gray-600">Resolved Complaints</p>
+              <p className="text-2xl font-bold">{resolvedComplaints}</p>
+            </div>
+            <ArrowUpRight size={18} className="text-gray-500" />
           </div>
         </div>
       </div>
     </div>
-  );
+  );  
 }
 
 export default AdminDashboard;

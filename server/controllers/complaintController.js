@@ -37,11 +37,21 @@ export const getAllComplaints = async (req, res) => {
     let complaints;
 
     if (req.user.role === "admin") {
-      complaints = await Complaint.find().sort({ createdAt: -1 });
+      complaints = await Complaint.find()
+        .populate("assignedTo", "name email")
+        .sort({ createdAt: -1 });
+    } else if (req.user.role === "maintenance") {
+      complaints = await Complaint.find({
+        assignedTo: req.user._id,
+      })
+        .populate("assignedTo", "name email")
+        .sort({ createdAt: -1 });
     } else {
       complaints = await Complaint.find({
         userId: req.user._id,
-      }).sort({ createdAt: -1 });
+      })
+        .populate("assignedTo", "name email")
+        .sort({ createdAt: -1 });
     }
 
     res.status(200).json({
@@ -50,13 +60,19 @@ export const getAllComplaints = async (req, res) => {
       complaints,
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
 
 export const getComplaintById = async (req, res) => {
   try {
-    const complaint = await Complaint.findById(req.params.id);
+    const complaint = await Complaint.findById(req.params.id).populate(
+      "assignedTo",
+      "name email",
+    );
 
     if (!complaint) {
       return res.status(404).json({
@@ -76,6 +92,50 @@ export const getComplaintById = async (req, res) => {
     }
 
     res.status(200).json({
+      success: true,
+      complaint,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+
+export const updateComplaintStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+
+    const complaint = await Complaint.findById(req.params.id);
+
+    if (!complaint) {
+      return res.status(404).json({
+        success: false,
+        message: "Complaint not found",
+      });
+    }
+
+    if (
+      req.user.role !== "admin" &&
+      complaint.assignedTo?.toString() !== req.user._id.toString()
+    ) {
+      return res.status(403).json({
+        success: false,
+        message: "Not authorized",
+      });
+    }
+
+    complaint.status = status;
+
+    if (status === "Resolved") {
+      complaint.resolvedAt = new Date();
+    }
+
+    await complaint.save();
+
+    res.json({
       success: true,
       complaint,
     });

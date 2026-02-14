@@ -16,13 +16,13 @@ function UserDashboard() {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      navigate("/login");
+      navigate("/");
       return;
     }
 
     fetch("http://localhost:5000/api/complaints", {
       headers: {
-        Authorization: `Bearer ${token}`, 
+        Authorization: `Bearer ${token}`,
       },
     })
       .then((res) => res.json())
@@ -51,63 +51,57 @@ function UserDashboard() {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div>
       <Navbar />
+      <UserSidebar />
 
-      <div className="flex">
-        <UserSidebar />
+      {/* Main Content (Adjusted for Fixed Navbar + Sidebar) */}
+      <div className="ml-56 mt-14 p-6 min-h-screen bg-gray-100">
+        <h1 className="text-xl font-bold mb-4">Dashboard</h1>
 
-        <div className="flex-1 p-6">
-          <h1 className="text-xl font-bold mb-4">Dashboard</h1>
-
-          <div className="flex flex-wrap gap-4 mt-6 mb-6">
-            {/* Total Complaints */}
-            <div
-              onClick={() => navigate("/user/my-complaints")}
-              className="w-full sm:w-[48%] lg:w-[23%] bg-white border border-gray-300 rounded p-4 cursor-pointer hover:bg-gray-50 flex justify-between items-center"
-            >
-              <div>
-                <p className="text-sm text-gray-600">Total Complaints</p>
-                <p className="text-2xl font-bold">{totalComplaints}</p>
-              </div>
-              <ArrowUpRight size={18} className="text-gray-500" />
+        <div className="flex flex-wrap gap-4 mt-6 mb-6">
+          <div
+            onClick={() => navigate("/user/my-complaints")}
+            className="w-full sm:w-[48%] lg:w-[23%] bg-white border border-gray-300 rounded p-4 cursor-pointer hover:bg-gray-50 flex justify-between items-center"
+          >
+            <div>
+              <p className="text-sm text-gray-600">Total Complaints</p>
+              <p className="text-2xl font-bold">{totalComplaints}</p>
             </div>
+            <ArrowUpRight size={18} className="text-gray-500" />
+          </div>
 
-            {/* Pending */}
-            <div
-              onClick={() => navigate("/user/status")}
-              className="w-full sm:w-[48%] lg:w-[23%] bg-white border border-gray-300 rounded p-4 cursor-pointer hover:bg-gray-50 flex justify-between items-center"
-            >
-              <div>
-                <p className="text-sm text-gray-600">Pending Complaints</p>
-                <p className="text-2xl font-bold">{pendingComplaints}</p>
-              </div>
-              <ArrowUpRight size={18} className="text-gray-500" />
+          <div
+            onClick={() => navigate("/user/status")}
+            className="w-full sm:w-[48%] lg:w-[23%] bg-white border border-gray-300 rounded p-4 cursor-pointer hover:bg-gray-50 flex justify-between items-center"
+          >
+            <div>
+              <p className="text-sm text-gray-600">Pending Complaints</p>
+              <p className="text-2xl font-bold">{pendingComplaints}</p>
             </div>
+            <ArrowUpRight size={18} className="text-gray-500" />
+          </div>
 
-            {/* In Progress */}
-            <div
-              onClick={() => navigate("/user/status")}
-              className="w-full sm:w-[48%] lg:w-[23%] bg-white border border-gray-300 rounded p-4 cursor-pointer hover:bg-gray-50 flex justify-between items-center"
-            >
-              <div>
-                <p className="text-sm text-gray-600">In Progress</p>
-                <p className="text-2xl font-bold">{inProgressComplaints}</p>
-              </div>
-              <ArrowUpRight size={18} className="text-gray-500" />
+          <div
+            onClick={() => navigate("/user/status")}
+            className="w-full sm:w-[48%] lg:w-[23%] bg-white border border-gray-300 rounded p-4 cursor-pointer hover:bg-gray-50 flex justify-between items-center"
+          >
+            <div>
+              <p className="text-sm text-gray-600">In Progress</p>
+              <p className="text-2xl font-bold">{inProgressComplaints}</p>
             </div>
+            <ArrowUpRight size={18} className="text-gray-500" />
+          </div>
 
-            {/* Resolved */}
-            <div
-              onClick={() => navigate("/user/status")}
-              className="w-full sm:w-[48%] lg:w-[23%] bg-white border border-gray-300 rounded p-4 cursor-pointer hover:bg-gray-50 flex justify-between items-center"
-            >
-              <div>
-                <p className="text-sm text-gray-600">Resolved</p>
-                <p className="text-2xl font-bold">{resolvedComplaints}</p>
-              </div>
-              <ArrowUpRight size={18} className="text-gray-500" />
+          <div
+            onClick={() => navigate("/user/status")}
+            className="w-full sm:w-[48%] lg:w-[23%] bg-white border border-gray-300 rounded p-4 cursor-pointer hover:bg-gray-50 flex justify-between items-center"
+          >
+            <div>
+              <p className="text-sm text-gray-600">Resolved</p>
+              <p className="text-2xl font-bold">{resolvedComplaints}</p>
             </div>
+            <ArrowUpRight size={18} className="text-gray-500" />
           </div>
         </div>
       </div>

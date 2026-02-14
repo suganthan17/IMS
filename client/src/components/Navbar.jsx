@@ -1,6 +1,14 @@
 import React, { useState } from "react";
 import logo from "../assets/logo.svg";
-import { User, ChevronDown, Phone, LogOut } from "lucide-react";
+import {
+  User,
+  ChevronDown,
+  Phone,
+  LogOut,
+  Pencil,
+  Handshake,
+  OctagonAlert,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -11,15 +19,10 @@ function Navbar() {
   const role = localStorage.getItem("role");
   const email = localStorage.getItem("email");
 
-  const toggleDropdown = () => {
-    setOpen(!open);
-  };
-
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
     localStorage.removeItem("email");
-    setOpen(false);
 
     toast.success("Logged out successfully");
 
@@ -29,56 +32,88 @@ function Navbar() {
   };
 
   return (
-    <nav className="relative w-full h-12 bg-slate-800 text-white flex items-center px-5">
+    <nav className="fixed top-0 left-0 w-full h-14 bg-slate-800 text-white flex items-center px-5 shadow-md z-50">
       <div className="flex items-center gap-2">
         <img
           src={logo}
           alt="IMS Logo"
-          className="w-11 h-11 filter invert brightness-0"
+          className="w-10 h-10 filter invert brightness-0"
         />
         <span className="text-lg font-semibold tracking-wide">
           𝚄𝚗𝚒𝚟𝚎𝚛𝚜𝚒𝚝𝚢 𝙸𝙼𝚂
         </span>
       </div>
 
-      <div className="ml-auto border-l border-r relative">
-        <div
-          onClick={toggleDropdown}
-          className="flex items-center gap-2 cursor-pointer px-2 py-1 select-none"
-        >
-          <User size={25} />
-          <span className="text-md font-mono truncate max-w-[140px]">
-            {role === "admin" ? "Admin" : email}
-          </span>
-          <ChevronDown
-            size={14}
-            className={`transition-transform duration-300 ${
-              open ? "rotate-180" : ""
-            }`}
-          />
-        </div>
-
-        {open && (
-          <div className="absolute right-2 shadow-lg shadow-gray-400  mt-2 w-50 bg-white text-gray-800 border border-gray-400 rounded  z-50">
-            <ul className="text-sm">
-              <li className="flex items-center gap-2 px-4 py-2 hover:bg-yellow-200 cursor-pointer">
-                <User size={14} />
-                My Account
-              </li>
-              <li className="flex items-center gap-2 px-4 py-2 hover:bg-yellow-200 border-b border-gray-300 cursor-pointer">
-                <Phone size={14} />
-                Support
-              </li>
-              <li
-                onClick={handleLogout}
-                className="flex items-center gap-2 px-4 py-2 hover:bg-red-200 cursor-pointer text-red-600"
-              >
-                <LogOut size={14} />
-                Logout
-              </li>
-            </ul>
-          </div>
+      <div className="ml-auto flex items-center gap-4">
+        {role === "user" && (
+          <button
+            onClick={() => navigate("/user/raise-complaint")}
+            className="flex items-center gap-1 bg-yellow-400 text-black px-3 py-1.5 cursor-pointer rounded-md hover:bg-yellow-500 transition text-sm font-medium"
+          >
+            <Pencil size={18} />
+            Report
+          </button>
         )}
+
+        {role === "admin" && (
+          <button
+            onClick={() => navigate("/admin/assign-complaints")}
+            className="flex items-center gap-1 bg-yellow-500 text-black px-3 cursor-pointer py-1.5 rounded-md hover:bg-yellow-600 transition text-sm font-medium"
+          >
+            <Handshake size={18} />
+            Assign Staff
+          </button>
+        )}
+
+        {role === "maintenance" && (
+          <button
+            onClick={() => navigate("/staff/assigned-complaints")}
+            className="flex items-center gap-1 bg-yellow-500 text-black px-3 cursor-pointer py-1.5 rounded-md hover:bg-yellow-600 transition text-sm font-medium"
+          >
+            <OctagonAlert size={18} />
+            Complaints
+          </button>
+        )}
+
+        <div className="border-l border-r relative px-3">
+          <div
+            onClick={() => setOpen(!open)}
+            className="flex items-center gap-2 cursor-pointer py-1"
+          >
+            <User size={22} />
+            <span className="text-sm font-mono">
+              {role === "admin" ? "Admin" : email}
+            </span>
+            <ChevronDown
+              size={16}
+              className={`transition-transform ${open ? "rotate-180" : ""}`}
+            />
+          </div>
+
+          {open && (
+            <div className="absolute right-0 mt-2 w-52 bg-white text-gray-800 border border-gray-300 rounded-md shadow-lg z-50">
+              <ul className="text-sm">
+                <li className="flex items-center gap-2 px-4 py-2 hover:bg-yellow-200 cursor-pointer">
+                  <User size={14} />
+                  My Account
+                </li>
+
+                <li className="flex items-center gap-2 px-4 py-2 hover:bg-yellow-200 border-b border-gray-200 cursor-pointer">
+                  <Phone size={14} />
+                  Support
+                </li>
+
+                <li
+                  onClick={handleLogout}
+                  className="flex items-center gap-2 px-4 py-2 hover:bg-red-100 cursor-pointer text-red-600"
+                >
+                  <LogOut size={14} />
+                  Logout
+                </li>
+              </ul>
+            </div>
+          )}
+        </div>
       </div>
     </nav>
   );

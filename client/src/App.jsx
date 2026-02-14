@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -21,62 +21,29 @@ import Login from "./pages/auth/Login";
 import AdminDashboard from "./pages/Admin/AdminDashboard";
 import AllComplaints from "./pages/Admin/AllComplaints";
 import ManageStaff from "./pages/Admin/ManageStaff";
-import UpdateStatus from "./pages/Admin/UpdateStatus";
+import AssignComplaints from "./pages/Admin/AssignComplaints";
 
 /* Staff Pages */
 import StaffDashboard from "./pages/Staff/StaffDashboard";
+import AssignedComplaints from "./pages/Staff/AssignedComplaints";
 
 /* Protected Route */
 const ProtectedRoute = ({ children, role }) => {
   const token = localStorage.getItem("token");
   const userRole = localStorage.getItem("role");
 
-  if (!token) {
-    return <Navigate to="/" replace />;
-  }
-
-  if (role && userRole !== role) {
-    return <Navigate to="/" replace />;
-  }
+  if (!token) return <Navigate to="/" replace />;
+  if (role && userRole !== role) return <Navigate to="/" replace />;
 
   return children;
 };
 
 function App() {
-  const [token, setToken] = useState(localStorage.getItem("token"));
-  const [role, setRole] = useState(localStorage.getItem("role"));
-
-  useEffect(() => {
-    const syncAuth = () => {
-      setToken(localStorage.getItem("token"));
-      setRole(localStorage.getItem("role"));
-    };
-
-    window.addEventListener("storage", syncAuth);
-
-    return () => window.removeEventListener("storage", syncAuth);
-  }, []);
-
   return (
     <Router>
       <Routes>
-        {/* AUTH */}
-        <Route
-          path="/"
-          element={
-            token ? (
-              role === "admin" ? (
-                <Navigate to="/admin/dashboard" replace />
-              ) : role === "maintenance" ? (
-                <Navigate to="/staff/dashboard" replace />
-              ) : (
-                <Navigate to="/user/dashboard" replace />
-              )
-            ) : (
-              <Login />
-            )
-          }
-        />
+        {/* AUTH ROUTES */}
+        <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
         {/* USER ROUTES */}
@@ -147,10 +114,10 @@ function App() {
           }
         />
         <Route
-          path="/admin/update-details"
+          path="/admin/assign-complaints"
           element={
             <ProtectedRoute role="admin">
-              <UpdateStatus />
+              <AssignComplaints />
             </ProtectedRoute>
           }
         />
@@ -164,7 +131,16 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/staff/assigned-complaints"
+          element={
+            <ProtectedRoute role="maintenance">
+              <AssignedComplaints />
+            </ProtectedRoute>
+          }
+        />
 
+        {/* FALLBACK */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>

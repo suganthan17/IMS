@@ -1,22 +1,23 @@
 import express from "express";
 import authMiddleware from "../middleware/authMiddleware.js";
 import {
-  getAllMaintenanceStaff,
-  assignComplaint,
-  addStaff,
-} from "../controllers/adminController.js";
+  getAssignedComplaints,
+  updateComplaintStatus,
+} from "../controllers/maintenanceController.js";
 
 const router = express.Router();
+
 router.use(authMiddleware);
+
+// Only maintenance role allowed
 router.use((req, res, next) => {
-  if (req.user.role !== "admin") {
+  if (req.user.role !== "maintenance") {
     return res.status(403).json({ message: "Access denied" });
   }
   next();
 });
 
-router.get("/staff", getAllMaintenanceStaff);
-router.put("/assign/:id", assignComplaint);
-router.post("/add-staff", addStaff);
+router.get("/assigned", getAssignedComplaints);
+router.put("/update-status/:id", updateComplaintStatus);
 
 export default router;

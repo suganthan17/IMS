@@ -66,11 +66,10 @@ function Register() {
             <input
               type="text"
               name="name"
-              placeholder="Enter your name"
               required
               value={formData.name}
               onChange={handleChange}
-              className="w-full mt-1 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-slate-700"
+              className="w-full mt-1 px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-slate-700"
             />
           </div>
 
@@ -79,11 +78,10 @@ function Register() {
             <input
               type="email"
               name="email"
-              placeholder="Enter your email"
               required
               value={formData.email}
               onChange={handleChange}
-              className="w-full mt-1 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-slate-700"
+              className="w-full mt-1 px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-slate-700"
             />
           </div>
 
@@ -94,17 +92,16 @@ function Register() {
               <input
                 type={showPassword ? "text" : "password"}
                 name="password"
-                placeholder="Create a password"
                 required
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border rounded-md pr-10 focus:outline-none focus:ring-2 focus:ring-slate-700"
+                className="w-full px-4 py-2 border rounded-md pr-10 focus:outline-none focus:ring-1 focus:ring-slate-700"
               />
 
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-3 flex items-center text-gray-500"
+                className="absolute inset-y-0 right-3 flex cursor-pointer items-center text-gray-500"
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
@@ -114,7 +111,7 @@ function Register() {
           {/* Sign up */}
           <button
             type="submit"
-            className="w-full bg-slate-800 text-white py-2.5 rounded-md font-medium hover:bg-slate-900 transition"
+            className="w-full bg-slate-800 text-white py-2.5  cursor-pointer rounded-md font-medium hover:bg-slate-900 transition"
           >
             Sign up
           </button>

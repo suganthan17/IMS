@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Eye, EyeOff } from "lucide-react";
-import staffData from "../../data/staffData";
 
 const API_BASE = "http://localhost:5000";
 
@@ -22,7 +21,6 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    
     try {
       const res = await fetch(`${API_BASE}/api/auth/login`, {
         method: "POST",
@@ -30,45 +28,34 @@ function Login() {
         body: JSON.stringify(formData),
       });
 
-      if (res.ok) {
-        const data = await res.json();
+      const data = await res.json();
 
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("role", data.role);
-        localStorage.setItem("email", formData.email);
-
-        toast.success("Login successful");
-
-        setTimeout(() => {
-          if (data.role === "admin") {
-            navigate("/admin/dashboard");
-          } else {
-            navigate("/user/dashboard");
-          }
-        }, 800);
-
+      if (!res.ok) {
+        toast.error(data.message || "Invalid credentials");
         return;
+      }
+
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("role", data.role);
+      localStorage.setItem("email", data.email || formData.email);
+
+      if (data.user && data.user._id) {
+        localStorage.setItem("userId", data.user._id);
+      }
+
+      toast.success("Login successful");
+
+      if (data.role === "admin") {
+        navigate("/admin/dashboard", { replace: true });
+      } else if (data.role === "maintenance") {
+        navigate("/staff/dashboard", { replace: true });
+      } else {
+        navigate("/user/dashboard", { replace: true });
       }
     } catch (err) {
       console.error("Login error:", err);
       toast.error("Server error. Please try again later.");
-      return;
     }
-
-    const staff = staffData.find(
-      (s) => s.email === formData.email && s.password === formData.password,
-    );
-
-    if (!staff) {
-      toast.error("Invalid email or password");
-      return;
-    }
-
-    localStorage.setItem("role", staff.role);
-    localStorage.setItem("staff", JSON.stringify(staff));
-
-    toast.success(`Welcome ${staff.name}`);
-    
   };
 
   return (
@@ -113,7 +100,7 @@ function Login() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-3 flex items-center text-gray-500"
+                className="absolute inset-y-0 right-3 flex items-center cursor-pointer text-gray-500"
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
@@ -122,7 +109,7 @@ function Login() {
 
           <button
             type="submit"
-            className="w-full bg-slate-800 text-white py-2.5 rounded-md"
+            className="w-full bg-slate-800 text-white cursor-pointer py-2.5 rounded-md"
           >
             Sign in
           </button>
