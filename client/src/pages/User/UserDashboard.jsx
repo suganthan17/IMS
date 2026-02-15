@@ -4,6 +4,8 @@ import { ArrowUpRight } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import UserSidebar from "../../components/UserSidebar";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 function UserDashboard() {
   const navigate = useNavigate();
 
@@ -20,7 +22,7 @@ function UserDashboard() {
       return;
     }
 
-    fetch("http://localhost:5000/api/complaints", {
+    fetch(`${API_URL}/api/complaints`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -55,7 +57,6 @@ function UserDashboard() {
       <Navbar />
       <UserSidebar />
 
-      {/* Main Content (Adjusted for Fixed Navbar + Sidebar) */}
       <div className="ml-56 mt-14 p-6 min-h-screen bg-gray-100">
         <h1 className="text-xl font-bold mb-4">Dashboard</h1>
 

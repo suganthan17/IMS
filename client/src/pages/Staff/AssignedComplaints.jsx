@@ -4,6 +4,9 @@ import StaffSidebar from "../../components/StaffSidebar";
 import { List } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
+
 function AssignedComplaints() {
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -13,7 +16,7 @@ function AssignedComplaints() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/complaints", {
+    fetch(`${API_URL}/api/complaints`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

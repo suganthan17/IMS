@@ -4,6 +4,9 @@ import Navbar from "../../components/Navbar";
 import AdminSidebar from "../../components/AdminSidebar";
 import { toast } from "react-toastify";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
+
 function AssignComplaints() {
   const [complaints, setComplaints] = useState([]);
   const [staff, setStaff] = useState([]);
@@ -14,13 +17,13 @@ function AssignComplaints() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const res1 = await fetch("http://localhost:5000/api/complaints", {
+        const res1 = await fetch(`${API_URL}/api/complaints`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data1 = await res1.json();
         setComplaints(data1.complaints || []);
 
-        const res2 = await fetch("http://localhost:5000/api/admin/staff", {
+        const res2 = await fetch(`${API_URL}/api/admin/staff`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data2 = await res2.json();
@@ -36,7 +39,7 @@ function AssignComplaints() {
   const assignStaff = async (complaintId, staffId) => {
     try {
       const res = await fetch(
-        `http://localhost:5000/api/admin/assign/${complaintId}`,
+        `${API_URL}/api/admin/assign/${complaintId}`,
         {
           method: "PUT",
           headers: {

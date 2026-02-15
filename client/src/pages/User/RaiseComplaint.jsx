@@ -5,6 +5,9 @@ import { PencilLine,Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
+
 function RaiseComplaint() {
   const navigate = useNavigate();
 
@@ -56,7 +59,7 @@ function RaiseComplaint() {
       }
 
       const response = await fetch(
-        "http://localhost:5000/api/complaints/raise",
+        `${API_URL}/api/complaints/raise`,
         {
           method: "POST",
           headers: {

@@ -4,6 +4,9 @@ import { List, ArrowLeft } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import UserSidebar from "../../components/UserSidebar";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
+
 function ComplaintDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -21,7 +24,7 @@ function ComplaintDetails() {
       return;
     }
 
-    fetch(`http://localhost:5000/api/complaints/${id}`, {
+    fetch(`${API_URL}/api/complaints/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

@@ -3,6 +3,9 @@ import { List } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import AdminSidebar from "../../components/AdminSidebar";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
+
 function AllComplaints() {
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -11,7 +14,7 @@ function AllComplaints() {
   const token = localStorage.getItem("token");
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/complaints", {
+    fetch(`${API_URL}/api/complaints`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

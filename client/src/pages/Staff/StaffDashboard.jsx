@@ -4,6 +4,10 @@ import { ArrowUpRight } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import StaffSidebar from "../../components/StaffSidebar";
 
+
+const API_URL = import.meta.env.VITE_API_URL;
+
+
 function StaffDashboard() {
   const navigate = useNavigate();
 
@@ -14,7 +18,7 @@ function StaffDashboard() {
     const token = localStorage.getItem("token");
     const staffId = localStorage.getItem("userId");
 
-    fetch("http://localhost:5000/api/complaints", {
+    fetch(`${API_URL}/api/complaints`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

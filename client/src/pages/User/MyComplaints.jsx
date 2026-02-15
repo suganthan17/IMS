@@ -4,6 +4,9 @@ import UserSidebar from "../../components/UserSidebar";
 import { useNavigate } from "react-router-dom";
 import { Info } from "lucide-react";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
+
 function MyComplaints() {
   const navigate = useNavigate();
   const [complaints, setComplaints] = useState([]);
@@ -12,7 +15,7 @@ function MyComplaints() {
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-    fetch("http://localhost:5000/api/complaints", {
+    fetch(`${API_URL}/api/complaints`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

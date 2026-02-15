@@ -11,14 +11,24 @@ import adminRoutes from "./routes/adminRoutes.js";
 import maintenanceRoutes from "./routes/maintenanceRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 
-
 dotenv.config();
 
 const app = express();
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://project-ims.vercel.app",
+];
+
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   }),
@@ -32,6 +42,9 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/maintenance", maintenanceRoutes);
 app.use("/api/users", userRoutes);
 
+app.get("/", (req, res) => {
+  res.send("IMS Backend Running");
+});
 
 const PORT = process.env.PORT || 5000;
 

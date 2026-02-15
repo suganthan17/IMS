@@ -4,6 +4,9 @@ import Navbar from "../../components/Navbar";
 import AdminSidebar from "../../components/AdminSidebar";
 import { toast } from "react-toastify";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
+
 function ManageStaff() {
   const [staff, setStaff] = useState([]);
   const [formData, setFormData] = useState({
@@ -16,7 +19,7 @@ function ManageStaff() {
 
   const fetchStaff = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/admin/staff", {
+      const res = await fetch(`${API_URL}/api/admin/staff`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -29,7 +32,7 @@ function ManageStaff() {
   useEffect(() => {
     const fetchStaff = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/admin/staff", {
+        const res = await fetch(`${API_URL}/api/admin/staff`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
@@ -45,7 +48,7 @@ function ManageStaff() {
   const handleAddStaff = async (e) => {
     e.preventDefault();
 
-    const res = await fetch("http://localhost:5000/api/admin/add-staff", {
+    const res = await fetch(`${API_URL}/api/admin/add-staff`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -71,7 +74,7 @@ function ManageStaff() {
     );
     if (!confirmDelete) return;
 
-    const res = await fetch(`http://localhost:5000/api/admin/staff/${id}`, {
+    const res = await fetch(`${API_URL}/api/admin/staff/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     });

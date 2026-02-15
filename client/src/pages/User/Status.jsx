@@ -4,12 +4,15 @@ import { List } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import UserSidebar from "../../components/UserSidebar";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
+
 function StatusTable({ title, data, navigate }) {
   const statusBadge = (status) => {
     if (status === "Resolved") return "bg-green-200 text-green-800";
     if (status === "In Progress") return "bg-yellow-200 text-yellow-800";
     if (status === "Assigned") return "bg-blue-200 text-blue-800";
-    return "bg-orange-200 text-orange-800"; // Pending
+    return "bg-orange-200 text-orange-800"; 
   };
 
   return (
@@ -49,7 +52,6 @@ function StatusTable({ title, data, navigate }) {
 
             <tbody>
               {data.map((c, index) => {
-                // 🔥 Important logic
                 const displayStatus = c.assignedTo ? c.status : "Pending";
 
                 return (
@@ -109,7 +111,7 @@ function Status() {
       return;
     }
 
-    fetch("http://localhost:5000/api/complaints", {
+    fetch(`${API_URL}/api/complaints`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

@@ -4,6 +4,9 @@ import { ArrowUpRight } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import AdminSidebar from "../../components/AdminSidebar";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
+
 function AdminDashboard() {
   const navigate = useNavigate();
 
@@ -17,7 +20,7 @@ function AdminDashboard() {
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-    fetch("http://localhost:5000/api/users", {
+    fetch(`${API_URL}/api/users`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
@@ -34,7 +37,7 @@ function AdminDashboard() {
       })
       .catch((err) => console.error(err));
 
-    fetch("http://localhost:5000/api/complaints", {
+    fetch(`${API_URL}/api/complaints`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())

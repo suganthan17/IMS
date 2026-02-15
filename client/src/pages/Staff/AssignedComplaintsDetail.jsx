@@ -5,6 +5,9 @@ import Navbar from "../../components/Navbar";
 import StaffSidebar from "../../components/StaffSidebar";
 import { toast } from "react-toastify";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
+
 function AssignedComplaintDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -17,7 +20,7 @@ function AssignedComplaintDetails() {
   const token = localStorage.getItem("token");
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/complaints/${id}`, {
+    fetch(`${API_URL}/api/complaints/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -40,7 +43,7 @@ function AssignedComplaintDetails() {
     }
 
     const res = await fetch(
-      `http://localhost:5000/api/complaints/update-status/${id}`,
+      `${API_URL}/api/complaints/update-status/${id}`,
       {
         method: "PUT",
         headers: {
