@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "../../components/Navbar";
 import UserSidebar from "../../components/UserSidebar";
-import { PencilLine } from "lucide-react";
+import { PencilLine,Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -15,7 +15,15 @@ function RaiseComplaint() {
     description: "",
   });
 
+  const [image, setImage] = useState(null);
+  const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    return () => {
+      if (preview) URL.revokeObjectURL(preview);
+    };
+  }, [preview]);
 
   const handleChange = (e) => {
     setFormData({
@@ -37,15 +45,24 @@ function RaiseComplaint() {
     }
 
     try {
+      const dataToSend = new FormData();
+      dataToSend.append("category", formData.category);
+      dataToSend.append("summary", formData.summary);
+      dataToSend.append("location", formData.location);
+      dataToSend.append("description", formData.description);
+
+      if (image) {
+        dataToSend.append("image", image);
+      }
+
       const response = await fetch(
         "http://localhost:5000/api/complaints/raise",
         {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(formData),
+          body: dataToSend,
         },
       );
 
@@ -60,12 +77,14 @@ function RaiseComplaint() {
           location: "",
           description: "",
         });
+
+        setImage(null);
+        setPreview(null);
       } else {
         toast.error(data.message || "Failed to submit complaint");
       }
     } catch (error) {
-      console.error(error);
-      toast.error("Server error. Please try again later.");
+      toast.error("Server error. Please try again later.", error);
     } finally {
       setLoading(false);
     }
@@ -100,24 +119,36 @@ function RaiseComplaint() {
                 >
                   <option value="">Select Category</option>
                   <option value="Water Supply">Water Supply</option>
+                  <option value="Drainage">Drainage / Sewerage</option>
                   <option value="Lighting Issues">Lighting Issues</option>
-                  <option value="Smart Classroom">
-                    Smart Classroom / Projector
-                  </option>
-                  <option value="WiFi">Wi-Fi Connectivity</option>
-                  <option value="HVAC">HVAC / Air Conditioning</option>
+                  <option value="Electrical Fault">Electrical Fault</option>
                   <option value="Power Backup">Power Backup</option>
+                  <option value="WiFi">Wi-Fi Connectivity</option>
+                  <option value="Network Cabling">Network / LAN Issue</option>
+                  <option value="HVAC">HVAC / Air Conditioning</option>
+                  <option value="Ventilation">Ventilation Issue</option>
                   <option value="Lift">Lift / Elevator</option>
+                  <option value="Staircase">Staircase Maintenance</option>
                   <option value="Doors">Doors / Windows</option>
-                  <option value="Instruments">Instrument Calibration</option>
+                  <option value="Furniture">Furniture Damage</option>
+                  <option value="Projector">Smart Classroom / Projector</option>
+                  <option value="Laboratory">Laboratory Equipment</option>
+                  <option value="Instrument">Instrument Calibration</option>
                   <option value="Building">Building Damage</option>
-                  <option value="Library">Book Availability</option>
+                  <option value="Ceiling">Ceiling Leakage / Damage</option>
+                  <option value="Flooring">Flooring / Tile Damage</option>
+                  <option value="Painting">Painting / Wall Issue</option>
                   <option value="Washroom">Washroom Maintenance</option>
-                  <option value="Hostel">Hostel Sanitation</option>
-                  <option value="Waste">Waste Management</option>
+                  <option value="Hostel">Hostel Maintenance</option>
+                  <option value="Mess">Mess / Canteen Issue</option>
+                  <option value="Library">Library Maintenance</option>
                   <option value="Transport">University Transport</option>
                   <option value="Parking">Parking Issues</option>
-                  <option value="Noise">Noise Issues</option>
+                  <option value="Security">Security Concern</option>
+                  <option value="CCTV">CCTV Issue</option>
+                  <option value="Waste">Waste Management</option>
+                  <option value="Garden">Garden / Landscaping</option>
+                  <option value="Noise">Noise Complaint</option>
                   <option value="Others">Others</option>
                 </select>
               </div>
@@ -145,24 +176,74 @@ function RaiseComplaint() {
                   name="location"
                   value={formData.location}
                   onChange={handleChange}
-                  placeholder="Block / Building / Room No"
                   className="w-full border border-gray-400 px-2 py-1 text-sm"
                   required
                 />
               </div>
 
-              <div className="bg-gray-100 px-4 py-3 font-medium md:border-r border-gray-300">
+              <div className="bg-gray-100 px-4 py-3 font-medium md:border-r border-b border-gray-300">
                 Description
               </div>
-              <div className="md:col-span-3 px-4 py-3">
+              <div className="md:col-span-3 px-4 py-3 border-b border-gray-300">
                 <textarea
                   name="description"
                   value={formData.description}
                   onChange={handleChange}
-                  rows="6"
+                  rows="5"
                   className="w-full border border-gray-400 px-2 py-1 text-sm resize-none"
                   required
                 />
+              </div>
+
+              <div className="bg-gray-100 px-4 py-3 font-medium md:border-r border-gray-300">
+                Upload Image (optional)
+              </div>
+
+              <div className="md:col-span-3 px-4 py-3">
+                {!image && (
+                  <label className="inline-block cursor-pointer bg-slate-600 text-white text-sm px-4 py-1.5 rounded hover:bg-slate-700 transition">
+                    Choose Image
+                    <input
+                      type="file"
+                      accept="image/*"
+                      hidden
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                          setImage(file);
+                          setPreview(URL.createObjectURL(file));
+                        }
+                      }}
+                    />
+                  </label>
+                )}
+
+                {preview && image && (
+                  <div className="mt-4 space-y-3">
+                    <div className="flex items-center justify-between border border-gray-300 px-3 py-2 rounded bg-gray-50">
+                      <span className="text-sm text-slate-700 truncate">
+                        {image.name}
+                      </span>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setImage(null);
+                          setPreview(null);
+                        }}
+                        className="text-red-600 cursor-pointer hover:text-red-700"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
+
+                    <img
+                      src={preview}
+                      alt="Preview"
+                      className="w-40 rounded border shadow-sm"
+                    />
+                  </div>
+                )}
               </div>
             </div>
 

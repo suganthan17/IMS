@@ -143,7 +143,7 @@ function AllComplaints() {
                         </td>
 
                         <td className="border border-gray-300 px-3 py-2 text-center">
-                          {new Date(c.createdAt).toLocaleDateString()}
+                          {new Date(c.createdAt).toLocaleDateString("en-GB")}
                         </td>
                       </tr>
                     );

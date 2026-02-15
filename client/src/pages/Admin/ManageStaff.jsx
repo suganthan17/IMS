@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { List } from "lucide-react";
+import { List, Trash2 } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import AdminSidebar from "../../components/AdminSidebar";
 import { toast } from "react-toastify";
@@ -14,33 +14,36 @@ function ManageStaff() {
 
   const token = localStorage.getItem("token");
 
-  useEffect(() => {
-    const loadStaff = async () => {
+  const fetchStaff = async () => {
+    try {
       const res = await fetch("http://localhost:5000/api/admin/staff", {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
       setStaff(data.staff || []);
+    } catch (error) {
+      toast.error("Failed to load staff", error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchStaff = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/admin/staff", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        setStaff(data.staff || []);
+      } catch (error) {
+        toast.error("Failed to load staff", error);
+      }
     };
 
-    loadStaff();
-  }, [token]);
-
-  const fetchStaff = async () => {
-    const res = await fetch("http://localhost:5000/api/admin/staff", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const data = await res.json();
-    setStaff(data.staff || []);
-  };
+    fetchStaff();
+  }, []);
 
   const handleAddStaff = async (e) => {
     e.preventDefault();
-
-    if (!formData.email.endsWith("@imsstaff.com")) {
-      toast.error("Email must end with @imsstaff.com");
-      return;
-    }
 
     const res = await fetch("http://localhost:5000/api/admin/add-staff", {
       method: "POST",
@@ -56,6 +59,27 @@ function ManageStaff() {
     if (data.success) {
       toast.success("Staff added successfully");
       setFormData({ name: "", email: "", password: "" });
+      fetchStaff();
+    } else {
+      toast.error(data.message);
+    }
+  };
+
+  const handleDeleteStaff = async (id) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this staff?",
+    );
+    if (!confirmDelete) return;
+
+    const res = await fetch(`http://localhost:5000/api/admin/staff/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      toast.success("Staff deleted successfully");
       fetchStaff();
     } else {
       toast.error(data.message);
@@ -94,7 +118,7 @@ function ManageStaff() {
 
               <input
                 type="email"
-                placeholder="Email (@imsstaff.com)"
+                placeholder="Email"
                 value={formData.email}
                 onChange={(e) =>
                   setFormData({ ...formData, email: e.target.value })
@@ -117,7 +141,7 @@ function ManageStaff() {
               <div className="col-span-3 flex justify-end">
                 <button
                   type="submit"
-                  className="bg-slate-600 text-white px-6 cursor-pointer py-2 rounded hover:bg-slate-700"
+                  className="bg-slate-600 text-white px-6 py-2 rounded hover:bg-slate-700 cursor-pointer"
                 >
                   Add Staff
                 </button>
@@ -138,6 +162,9 @@ function ManageStaff() {
                   <th className="border border-gray-300 px-3 py-5 text-left">
                     Email
                   </th>
+                  <th className="border border-gray-300 px-3 py-5 text-left">
+                    Action
+                  </th>
                 </tr>
               </thead>
 
@@ -157,6 +184,14 @@ function ManageStaff() {
                     </td>
                     <td className="border border-gray-300 px-3 py-2">
                       {s.email}
+                    </td>
+                    <td className="border border-gray-300 px-3 py-2">
+                      <button
+                        onClick={() => handleDeleteStaff(s._id)}
+                        className="text-red-500 hover:text-red-700 cursor-pointer"
+                      >
+                        <Trash2 size={18} />
+                      </button>
                     </td>
                   </tr>
                 ))}

@@ -80,7 +80,7 @@ function MyComplaints() {
                   <div>
                     <p className="text-xs text-slate-500">Date Submitted</p>
                     <p className="font-medium">
-                      {new Date(c.createdAt).toLocaleDateString()}
+                      {new Date(c.createdAt).toLocaleDateString("en-GB")}
                     </p>
                   </div>
 
@@ -88,7 +88,7 @@ function MyComplaints() {
                     <p className="text-xs text-slate-500">Resolved Date</p>
                     <p className="font-medium">
                       {c.status === "Resolved"
-                        ? new Date(c.updatedAt).toLocaleDateString()
+                        ? new Date(c.updatedAt).toLocaleDateString("en-GB")
                         : "-"}
                     </p>
                   </div>

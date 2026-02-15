@@ -13,9 +13,11 @@ import RaiseComplaint from "./pages/User/RaiseComplaint";
 import MyComplaints from "./pages/User/MyComplaints";
 import ComplaintDetails from "./pages/User/MyComplaintsDetails";
 
+
 /* Auth Pages */
 import Register from "./pages/auth/Register";
 import Login from "./pages/auth/Login";
+
 
 /* Admin Pages */
 import AdminDashboard from "./pages/Admin/AdminDashboard";
@@ -23,9 +25,12 @@ import AllComplaints from "./pages/Admin/AllComplaints";
 import ManageStaff from "./pages/Admin/ManageStaff";
 import AssignComplaints from "./pages/Admin/AssignComplaints";
 
+
 /* Staff Pages */
 import StaffDashboard from "./pages/Staff/StaffDashboard";
 import AssignedComplaints from "./pages/Staff/AssignedComplaints";
+import AssignedComplaintDetails from "./pages/Staff/AssignedComplaintsDetail";
+
 
 /* Protected Route */
 const ProtectedRoute = ({ children, role }) => {
@@ -140,7 +145,16 @@ function App() {
           }
         />
 
-        {/* FALLBACK */}
+        <Route
+          path="/staff/complaints/:id"
+          element={
+            <ProtectedRoute role="maintenance">
+              <AssignedComplaintDetails />
+            </ProtectedRoute>
+          }
+        />
+
+
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>

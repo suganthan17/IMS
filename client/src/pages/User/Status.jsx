@@ -83,7 +83,7 @@ function StatusTable({ title, data, navigate }) {
                     </td>
 
                     <td className="border border-gray-300 px-3 py-2 text-center">
-                      {new Date(c.updatedAt).toLocaleDateString()}
+                      {new Date(c.updatedAt).toLocaleDateString("en-GB")}
                     </td>
                   </tr>
                 );

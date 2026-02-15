@@ -9,7 +9,7 @@ const complaintSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: ["Pending", "Assigned","Resolved"],
+      enum: ["Pending", "Assigned", "Resolved"],
       default: "Pending",
     },
 
@@ -22,6 +22,13 @@ const complaintSchema = new mongoose.Schema(
     assignedTo: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+    },
+    beforeImage: {
+      type: String,
+    },
+
+    afterImage: {
+      type: String,
     },
   },
   { timestamps: true },

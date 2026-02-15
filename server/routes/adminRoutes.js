@@ -4,6 +4,7 @@ import {
   getAllMaintenanceStaff,
   assignComplaint,
   addStaff,
+  deleteStaff,
 } from "../controllers/adminController.js";
 
 const router = express.Router();
@@ -18,5 +19,6 @@ router.use((req, res, next) => {
 router.get("/staff", getAllMaintenanceStaff);
 router.put("/assign/:id", assignComplaint);
 router.post("/add-staff", addStaff);
+router.delete("/staff/:id", deleteStaff);
 
 export default router;

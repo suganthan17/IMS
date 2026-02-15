@@ -17,6 +17,7 @@ export const createComplaint = async (req, res) => {
       location,
       description,
       userId: req.user._id,
+      beforeImage: req.file ? req.file.path : null,
     });
 
     res.status(201).json({
@@ -81,10 +82,13 @@ export const getComplaintById = async (req, res) => {
       });
     }
 
-    if (
-      req.user.role !== "admin" &&
-      complaint.userId.toString() !== req.user._id.toString()
-    ) {
+    const isAdmin = req.user.role === "admin";
+    const isOwner = complaint.userId.toString() === req.user._id.toString();
+    const isAssignedStaff =
+      complaint.assignedTo &&
+      complaint.assignedTo._id.toString() === req.user._id.toString();
+
+    if (!isAdmin && !isOwner && !isAssignedStaff) {
       return res.status(403).json({
         success: false,
         message: "Access denied",
@@ -102,7 +106,6 @@ export const getComplaintById = async (req, res) => {
     });
   }
 };
-
 
 export const updateComplaintStatus = async (req, res) => {
   try {
@@ -127,16 +130,28 @@ export const updateComplaintStatus = async (req, res) => {
       });
     }
 
+    if (complaint.status === "Resolved") {
+      return res.status(400).json({
+        success: false,
+        message: "Resolved complaints cannot be modified",
+      });
+    }
+
     complaint.status = status;
 
     if (status === "Resolved") {
       complaint.resolvedAt = new Date();
+
+      if (req.file) {
+        complaint.afterImage = req.file.path;
+      }
     }
 
     await complaint.save();
 
-    res.json({
+    res.status(200).json({
       success: true,
+      message: "Status updated successfully",
       complaint,
     });
   } catch (error) {

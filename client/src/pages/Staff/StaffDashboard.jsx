@@ -48,10 +48,7 @@ function StaffDashboard() {
 
         <div className="flex flex-wrap gap-4">
           {/* Total Assigned */}
-          <div
-            onClick={() => navigate("/staff/my-complaints")}
-            className="w-full sm:w-[48%] lg:w-[23%] bg-white border border-gray-300 rounded p-4 cursor-pointer hover:bg-gray-50 flex justify-between items-center"
-          >
+          <div className="w-full sm:w-[48%] lg:w-[23%] bg-white border border-gray-300 rounded p-4 cursor-pointer hover:bg-gray-50 flex justify-between items-center">
             <div>
               <p className="text-sm text-gray-600">Total Assigned</p>
               <p className="text-2xl font-bold">{totalAssigned}</p>
