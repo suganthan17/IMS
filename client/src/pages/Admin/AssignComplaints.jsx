@@ -34,11 +34,13 @@ function AssignComplaints() {
         setLoading(false);
       }
     };
+
     loadData();
   }, []);
 
   const assignStaff = async (complaintId, staffId) => {
     setProcessingId(complaintId);
+
     try {
       const res = await fetch(`${API_URL}/api/admin/assign/${complaintId}`, {
         method: "PUT",
@@ -52,13 +54,16 @@ function AssignComplaints() {
       const data = await res.json();
 
       if (data.success) {
-        setComplaints((prev) =>
-          prev.map((c) => (c._id === complaintId ? data.complaint : c)),
-        );
         toast.success("Updated successfully");
+
+        setTimeout(() => {
+          window.location.reload();
+        }, 800);
+      } else {
+        toast.error(data.message || "Update failed");
       }
     } catch {
-      toast.error("Update failed");
+      toast.error("Server error");
     } finally {
       setProcessingId(null);
     }
@@ -73,7 +78,27 @@ function AssignComplaints() {
         <h1 className="text-xl font-bold mb-4">Assign Complaints to Staff</h1>
 
         {loading ? (
-          <div className="text-center py-10">Loading...</div>
+          <div className="flex justify-center py-10">
+            <svg
+              className="animate-spin h-6 w-6 text-slate-600"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+                fill="none"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8v8H4z"
+              />
+            </svg>
+          </div>
         ) : (
           <div className="bg-white border border-slate-500 rounded-sm">
             <div className="bg-slate-500 text-white px-4 py-3 font-medium flex items-center gap-2">
@@ -96,18 +121,27 @@ function AssignComplaints() {
                     </th>
                   </tr>
                 </thead>
+
                 <tbody>
-                  {complaints.map((c) => (
-                    <tr key={c._id}>
-                      <td className="border border-gray-300 px-4 py-3">
+                  {complaints.map((c, index) => (
+                    <tr
+                      key={c._id}
+                      className={`${
+                        index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                      } hover:bg-slate-100`}
+                    >
+                      <td className="border border-gray-300 px-4 py-3 font-medium text-slate-700">
                         {c.summary}
                       </td>
+
                       <td className="border border-gray-300 px-4 py-3 text-center">
                         {c.assignedTo ? (
-                          c.assignedTo.name
+                          <span className="font-medium text-slate-700">
+                            {c.assignedTo.name}
+                          </span>
                         ) : (
                           <select
-                            className="border border-gray-300 px-2 py-1 rounded"
+                            className="border border-gray-300 px-2 py-1 rounded focus:outline-none focus:ring-1 focus:ring-slate-500"
                             disabled={processingId === c._id}
                             onChange={(e) => assignStaff(c._id, e.target.value)}
                           >
@@ -120,12 +154,17 @@ function AssignComplaints() {
                           </select>
                         )}
                       </td>
+
                       <td className="border border-gray-300 px-4 py-3 text-center">
                         {c.assignedTo && (
                           <button
                             disabled={processingId === c._id}
                             onClick={() => assignStaff(c._id, null)}
-                            className="text-red-600"
+                            className={`${
+                              processingId === c._id
+                                ? "text-gray-400 cursor-not-allowed"
+                                : "text-red-600 hover:text-red-700"
+                            }`}
                           >
                             {processingId === c._id ? (
                               "Updating..."
