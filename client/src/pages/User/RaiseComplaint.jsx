@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../../components/Navbar";
 import UserSidebar from "../../components/UserSidebar";
-import { PencilLine,Trash2 } from "lucide-react";
+import { PencilLine, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const API_URL = import.meta.env.VITE_API_URL;
-
 
 function RaiseComplaint() {
   const navigate = useNavigate();
@@ -58,16 +57,13 @@ function RaiseComplaint() {
         dataToSend.append("image", image);
       }
 
-      const response = await fetch(
-        `${API_URL}/api/complaints/raise`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          body: dataToSend,
+      const response = await fetch(`${API_URL}/api/complaints/raise`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-      );
+        body: dataToSend,
+      });
 
       const data = await response.json();
 
@@ -254,9 +250,38 @@ function RaiseComplaint() {
               <button
                 type="submit"
                 disabled={loading}
-                className="px-4 py-1.5 border cursor-pointer border-slate-500 text-slate-600 text-sm rounded hover:bg-slate-300 disabled:opacity-50"
+                className={`px-6 py-2 text-sm rounded transition flex items-center justify-center gap-2 ${
+                  loading
+                    ? "bg-slate-400 text-white cursor-not-allowed"
+                    : "bg-slate-700 text-white hover:bg-slate-800 cursor-pointer"
+                }`}
               >
-                {loading ? "Submitting..." : "Submit Issue"}
+                {loading ? (
+                  <>
+                    <svg
+                      className="animate-spin h-4 w-4 text-white"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                        fill="none"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v8H4z"
+                      />
+                    </svg>
+                    Posting...
+                  </>
+                ) : (
+                  "Submit Issue"
+                )}
               </button>
             </div>
           </form>

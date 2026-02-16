@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { List, ArrowLeft,Trash2 } from "lucide-react";
+import { List, ArrowLeft, Trash2 } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import StaffSidebar from "../../components/StaffSidebar";
 import { toast } from "react-toastify";
 
 const API_URL = import.meta.env.VITE_API_URL;
-
 
 function AssignedComplaintDetails() {
   const { id } = useParams();
@@ -42,16 +41,13 @@ function AssignedComplaintDetails() {
       formData.append("image", afterImage);
     }
 
-    const res = await fetch(
-      `${API_URL}/api/complaints/update-status/${id}`,
-      {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
+    const res = await fetch(`${API_URL}/api/complaints/update-status/${id}`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
       },
-    );
+      body: formData,
+    });
 
     const data = await res.json();
 
@@ -86,7 +82,7 @@ function AssignedComplaintDetails() {
         <div className="flex items-center gap-3 mt-6">
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center gap-1 text-sm text-slate-600 hover:text-slate-800"
+            className="flex items-center gap-1 cursor-pointer text-sm text-slate-600 hover:text-slate-800"
           >
             <ArrowLeft size={16} />
             Back

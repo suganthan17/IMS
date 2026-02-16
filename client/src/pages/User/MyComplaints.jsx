@@ -6,11 +6,11 @@ import { Info } from "lucide-react";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-
 function MyComplaints() {
   const navigate = useNavigate();
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [activeId, setActiveId] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -47,9 +47,29 @@ function MyComplaints() {
         <h1 className="text-xl font-bold mb-6">My Complaints</h1>
 
         {loading ? (
-          <p>Loading complaints...</p>
+          <div className="flex justify-center items-center py-20">
+            <div className="flex items-center gap-3 text-slate-600">
+              <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                  fill="none"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v8H4z"
+                />
+              </svg>
+              Loading complaints...
+            </div>
+          </div>
         ) : complaints.length === 0 ? (
-          <p>No complaints found.</p>
+          <p className="text-slate-600">No complaints found.</p>
         ) : (
           <div className="flex flex-wrap gap-6">
             {complaints.map((c) => (
@@ -70,7 +90,7 @@ function MyComplaints() {
 
                   <span
                     className={`text-xs px-3 py-1 rounded-full border font-medium ${statusStyle(
-                      c.status
+                      c.status,
                     )}`}
                   >
                     {c.status}
@@ -98,10 +118,40 @@ function MyComplaints() {
                 </div>
 
                 <button
-                  onClick={() => navigate(`/user/complaints/${c._id}`)}
-                  className="mt-4 w-full border border-gray-300 cursor-pointer rounded-lg py-2 text-sm font-medium text-slate-700 hover:bg-slate-500 hover:text-white transition"
+                  onClick={() => {
+                    setActiveId(c._id);
+                    navigate(`/user/complaints/${c._id}`);
+                  }}
+                  disabled={activeId === c._id}
+                  className={`mt-4 w-full rounded-lg py-2 text-sm font-medium transition flex items-center justify-center gap-2 ${
+                    activeId === c._id
+                      ? "bg-slate-400 text-white cursor-not-allowed"
+                      : "border border-gray-300 text-slate-700 hover:bg-slate-600 hover:text-white cursor-pointer"
+                  }`}
                 >
-                  View Details
+                  {activeId === c._id ? (
+                    <>
+                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                          fill="none"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8v8H4z"
+                        />
+                      </svg>
+                      Loading...
+                    </>
+                  ) : (
+                    "View Details"
+                  )}
                 </button>
               </div>
             ))}

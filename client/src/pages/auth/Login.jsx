@@ -5,7 +5,6 @@ import { Eye, EyeOff } from "lucide-react";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-
 function Login() {
   const [formData, setFormData] = useState({
     email: "",
@@ -13,6 +12,8 @@ function Login() {
   });
 
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -21,6 +22,7 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
       const res = await fetch(`${API_URL}/api/auth/login`, {
@@ -33,6 +35,7 @@ function Login() {
 
       if (!res.ok) {
         toast.error(data.message || "Invalid credentials");
+        setLoading(false);
         return;
       }
 
@@ -56,13 +59,14 @@ function Login() {
     } catch (err) {
       console.error("Login error:", err);
       toast.error("Server error. Please try again later.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white">
       <div className="w-full max-w-sm">
-        {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-2xl font-semibold text-gray-900">
             Log in to your account
@@ -72,7 +76,6 @@ function Login() {
           </p>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="text-sm text-gray-600">Email</label>
@@ -97,7 +100,6 @@ function Login() {
                 onChange={handleChange}
                 className="w-full px-4 py-2 border rounded-md pr-10"
               />
-
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
@@ -110,9 +112,39 @@ function Login() {
 
           <button
             type="submit"
-            className="w-full bg-slate-800 text-white cursor-pointer py-2.5 rounded-md"
+            disabled={loading}
+            className={`w-full py-2.5 rounded-md text-white transition ${
+              loading
+                ? "bg-slate-400 cursor-not-allowed"
+                : "bg-slate-800 hover:bg-slate-900 cursor-pointer"
+            }`}
           >
-            Sign in
+            {loading ? (
+              <span className="flex items-center justify-center gap-2">
+                <svg
+                  className="animate-spin h-4 w-4 text-white"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    fill="none"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v8H4z"
+                  />
+                </svg>
+                Signing in...
+              </span>
+            ) : (
+              "Sign in"
+            )}
           </button>
         </form>
 

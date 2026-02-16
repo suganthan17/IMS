@@ -6,9 +6,10 @@ import { toast } from "react-toastify";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-
 function ManageStaff() {
   const [staff, setStaff] = useState([]);
+  const [adding, setAdding] = useState(false);
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -30,41 +31,36 @@ function ManageStaff() {
   };
 
   useEffect(() => {
-    const fetchStaff = async () => {
-      try {
-        const res = await fetch(`${API_URL}/api/admin/staff`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const data = await res.json();
-        setStaff(data.staff || []);
-      } catch (error) {
-        toast.error("Failed to load staff", error);
-      }
-    };
-
     fetchStaff();
   }, []);
 
   const handleAddStaff = async (e) => {
     e.preventDefault();
+    setAdding(true);
 
-    const res = await fetch(`${API_URL}/api/admin/add-staff`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(formData),
-    });
+    try {
+      const res = await fetch(`${API_URL}/api/admin/add-staff`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (data.success) {
-      toast.success("Staff added successfully");
-      setFormData({ name: "", email: "", password: "" });
-      fetchStaff();
-    } else {
-      toast.error(data.message);
+      if (data.success) {
+        toast.success("Staff added successfully");
+        setFormData({ name: "", email: "", password: "" });
+        fetchStaff();
+      } else {
+        toast.error(data.message || "Failed to add staff");
+      }
+    } catch (error) {
+      toast.error("Server error", error);
+    } finally {
+      setAdding(false);
     }
   };
 
@@ -74,18 +70,22 @@ function ManageStaff() {
     );
     if (!confirmDelete) return;
 
-    const res = await fetch(`${API_URL}/api/admin/staff/${id}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    try {
+      const res = await fetch(`${API_URL}/api/admin/staff/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (data.success) {
-      toast.success("Staff deleted successfully");
-      fetchStaff();
-    } else {
-      toast.error(data.message);
+      if (data.success) {
+        toast.success("Staff deleted successfully");
+        fetchStaff();
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error("Server error", error);
     }
   };
 
@@ -135,7 +135,10 @@ function ManageStaff() {
                 placeholder="Password"
                 value={formData.password}
                 onChange={(e) =>
-                  setFormData({ ...formData, password: e.target.value })
+                  setFormData({
+                    ...formData,
+                    password: e.target.value,
+                  })
                 }
                 className="border border-gray-300 px-3 py-2 rounded"
                 required
@@ -144,9 +147,36 @@ function ManageStaff() {
               <div className="col-span-3 flex justify-end">
                 <button
                   type="submit"
-                  className="bg-slate-600 text-white px-6 py-2 rounded hover:bg-slate-700 cursor-pointer"
+                  disabled={adding}
+                  className={`px-6 py-2 rounded flex items-center gap-2 transition ${
+                    adding
+                      ? "bg-slate-400 text-white cursor-not-allowed"
+                      : "bg-slate-600 text-white hover:bg-slate-700 cursor-pointer"
+                  }`}
                 >
-                  Add Staff
+                  {adding ? (
+                    <>
+                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                          fill="none"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8v8H4z"
+                        />
+                      </svg>
+                      Adding...
+                    </>
+                  ) : (
+                    "Add Staff"
+                  )}
                 </button>
               </div>
             </form>

@@ -6,16 +6,18 @@ import { toast } from "react-toastify";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-
 function AssignComplaints() {
   const [complaints, setComplaints] = useState([]);
   const [staff, setStaff] = useState([]);
   const [filterStatus, setFilterStatus] = useState("All");
+  const [loading, setLoading] = useState(true);
+  const [processingId, setProcessingId] = useState(null);
 
   const token = localStorage.getItem("token");
 
   useEffect(() => {
     const loadData = async () => {
+      setLoading(true);
       try {
         const res1 = await fetch(`${API_URL}/api/complaints`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -29,7 +31,9 @@ function AssignComplaints() {
         const data2 = await res2.json();
         setStaff(data2.staff || []);
       } catch (err) {
-        console.log(err);
+        toast.error("Failed to load data", err);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -37,29 +41,29 @@ function AssignComplaints() {
   }, [token]);
 
   const assignStaff = async (complaintId, staffId) => {
+    setProcessingId(complaintId);
     try {
-      const res = await fetch(
-        `${API_URL}/api/admin/assign/${complaintId}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ staffId }),
-        }
-      );
+      const res = await fetch(`${API_URL}/api/admin/assign/${complaintId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ staffId }),
+      });
 
       const data = await res.json();
 
       if (data.success) {
         toast.success("Updated successfully");
         setComplaints((prev) =>
-          prev.map((c) => (c._id === complaintId ? data.complaint : c))
+          prev.map((c) => (c._id === complaintId ? data.complaint : c)),
         );
       }
     } catch (err) {
-      console.log(err);
+      toast.error("Update failed", err);
+    } finally {
+      setProcessingId(null);
     }
   };
 
@@ -92,11 +96,8 @@ function AssignComplaints() {
       <AdminSidebar />
 
       <div className="ml-56 mt-14 p-6 min-h-screen bg-gray-100">
-        <h1 className="text-xl font-bold mb-4">
-          Assign Complaints to Staff
-        </h1>
+        <h1 className="text-xl font-bold mb-4">Assign Complaints to Staff</h1>
 
-        {/* FILTER */}
         <div className="mb-4 flex items-center gap-3">
           <label className="text-sm font-medium text-slate-700">
             Filter by Status:
@@ -123,7 +124,29 @@ function AssignComplaints() {
             </span>
           </div>
 
-          {filteredComplaints.length === 0 ? (
+          {loading ? (
+            <div className="flex justify-center items-center py-20">
+              <svg
+                className="animate-spin h-6 w-6 text-slate-600"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                  fill="none"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v8H4z"
+                />
+              </svg>
+            </div>
+          ) : filteredComplaints.length === 0 ? (
             <p className="p-4 text-sm text-gray-600">
               No complaints found for selected filter.
             </p>
@@ -132,26 +155,16 @@ function AssignComplaints() {
               <table className="w-full text-sm border-collapse">
                 <thead className="bg-slate-100">
                   <tr>
-                    <th className="border border-gray-300 px-3 py-3 text-left">
-                      Issue
-                    </th>
-                    <th className="border border-gray-300 px-3 py-3 text-center">
-                      Status
-                    </th>
-                    <th className="border border-gray-300 px-3 py-3 text-center">
-                      Staff
-                    </th>
-                    <th className="border border-gray-300 px-3 py-3 text-center">
-                      Action
-                    </th>
+                    <th className="border px-3 py-3 text-left">Issue</th>
+                    <th className="border px-3 py-3 text-center">Status</th>
+                    <th className="border px-3 py-3 text-center">Staff</th>
+                    <th className="border px-3 py-3 text-center">Action</th>
                   </tr>
                 </thead>
 
                 <tbody>
                   {filteredComplaints.map((c, index) => {
-                    const displayStatus = c.assignedTo
-                      ? c.status
-                      : "Pending";
+                    const displayStatus = c.assignedTo ? c.status : "Pending";
 
                     return (
                       <tr
@@ -160,28 +173,33 @@ function AssignComplaints() {
                           index % 2 === 0 ? "bg-white" : "bg-gray-50"
                         } hover:bg-slate-100`}
                       >
-                        <td className="border border-gray-300 px-3 py-2 font-medium text-slate-700">
+                        <td className="border px-3 py-2 font-medium text-slate-700">
                           {c.summary}
                         </td>
 
-                        <td className="border border-gray-300 px-3 py-2 text-center">
+                        <td className="border px-3 py-2 text-center">
                           <span
                             className={`px-2 py-1 rounded text-xs font-medium ${statusBadge(
-                              displayStatus
+                              displayStatus,
                             )}`}
                           >
                             {displayStatus}
                           </span>
                         </td>
 
-                        <td className="border border-gray-300 px-3 py-2 text-center">
-                          {c.assignedTo ? (
+                        <td className="border px-3 py-2 text-center">
+                          {processingId === c._id ? (
+                            <span className="text-slate-500 text-sm">
+                              Updating...
+                            </span>
+                          ) : c.assignedTo ? (
                             <span className="font-medium text-slate-700">
                               {c.assignedTo.name}
                             </span>
                           ) : (
                             <select
-                              className="border border-gray-300 px-2 py-1 rounded cursor-pointer"
+                              disabled={processingId === c._id}
+                              className="border px-2 py-1 rounded cursor-pointer"
                               onChange={(e) =>
                                 assignStaff(c._id, e.target.value)
                               }
@@ -196,20 +214,25 @@ function AssignComplaints() {
                           )}
                         </td>
 
-                        <td className="border border-gray-300 px-3 py-2 text-center">
+                        <td className="border px-3 py-2 text-center">
                           {c.assignedTo && (
                             <button
-                              onClick={() =>
-                                removeStaff(c._id, displayStatus)
+                              onClick={() => removeStaff(c._id, displayStatus)}
+                              disabled={
+                                displayStatus === "Resolved" ||
+                                processingId === c._id
                               }
-                              disabled={displayStatus === "Resolved"}
                               className={`${
                                 displayStatus === "Resolved"
                                   ? "text-gray-400 cursor-not-allowed"
                                   : "text-red-600 hover:text-red-700 cursor-pointer"
                               }`}
                             >
-                              <Trash2 size={18} />
+                              {processingId === c._id ? (
+                                <span className="text-sm">Updating...</span>
+                              ) : (
+                                <Trash2 size={18} />
+                              )}
                             </button>
                           )}
                         </td>

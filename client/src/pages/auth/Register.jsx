@@ -5,7 +5,6 @@ import { Eye, EyeOff } from "lucide-react";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-
 function Register() {
   const [formData, setFormData] = useState({
     name: "",
@@ -14,6 +13,7 @@ function Register() {
   });
 
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -26,31 +26,39 @@ function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
-    const res = await fetch(`${API_URL}/api/auth/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
+    try {
+      const res = await fetch(`${API_URL}/api/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (!res.ok) {
-      toast.error(data.message || "Registration failed");
-      return;
+      if (!res.ok) {
+        toast.error(data.message || "Registration failed");
+        setLoading(false);
+        return;
+      }
+
+      toast.success("Registration successful");
+
+      setTimeout(() => {
+        navigate("/");
+      }, 800);
+    } catch (err) {
+      console.error("Register error:", err);
+      toast.error("Server error. Please try again later.");
+    } finally {
+      setLoading(false);
     }
-
-    toast.success("Registration successful");
-
-    setTimeout(() => {
-      navigate("/");
-    }, 800);
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white">
       <div className="w-full max-w-sm">
-        {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-2xl font-semibold text-gray-900">
             Create an account
@@ -60,7 +68,6 @@ function Register() {
           </p>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="text-sm text-gray-600">Name</label>
@@ -88,7 +95,6 @@ function Register() {
 
           <div>
             <label className="text-sm text-gray-600">Password</label>
-
             <div className="relative mt-1">
               <input
                 type={showPassword ? "text" : "password"}
@@ -109,16 +115,44 @@ function Register() {
             </div>
           </div>
 
-          {/* Sign up */}
           <button
             type="submit"
-            className="w-full bg-slate-800 text-white py-2.5  cursor-pointer rounded-md font-medium hover:bg-slate-900 transition"
+            disabled={loading}
+            className={`w-full py-2.5 rounded-md text-white transition ${
+              loading
+                ? "bg-slate-400 cursor-not-allowed"
+                : "bg-slate-800 hover:bg-slate-900 cursor-pointer"
+            }`}
           >
-            Sign up
+            {loading ? (
+              <span className="flex items-center justify-center gap-2">
+                <svg
+                  className="animate-spin h-4 w-4 text-white"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    fill="none"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v8H4z"
+                  />
+                </svg>
+                Creating account...
+              </span>
+            ) : (
+              "Sign up"
+            )}
           </button>
         </form>
 
-        {/* Footer */}
         <p className="text-center text-sm text-gray-600 mt-6">
           Already have an account?{" "}
           <Link to="/" className="font-semibold text-slate-800">
