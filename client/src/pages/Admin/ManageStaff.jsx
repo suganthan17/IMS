@@ -8,7 +8,9 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 function ManageStaff() {
   const [staff, setStaff] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -23,10 +25,13 @@ function ManageStaff() {
       const res = await fetch(`${API_URL}/api/admin/staff`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+
       const data = await res.json();
       setStaff(data.staff || []);
-    } catch (error) {
-      toast.error("Failed to load staff", error);
+    } catch {
+      toast.error("Failed to load staff");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -53,12 +58,12 @@ function ManageStaff() {
       if (data.success) {
         toast.success("Staff added successfully");
         setFormData({ name: "", email: "", password: "" });
-        fetchStaff();
+        await fetchStaff(); // 🔥 ensures fresh data
       } else {
         toast.error(data.message || "Failed to add staff");
       }
-    } catch (error) {
-      toast.error("Server error", error);
+    } catch {
+      toast.error("Server error");
     } finally {
       setAdding(false);
     }
@@ -70,6 +75,8 @@ function ManageStaff() {
     );
     if (!confirmDelete) return;
 
+    setDeletingId(id);
+
     try {
       const res = await fetch(`${API_URL}/api/admin/staff/${id}`, {
         method: "DELETE",
@@ -80,12 +87,14 @@ function ManageStaff() {
 
       if (data.success) {
         toast.success("Staff deleted successfully");
-        fetchStaff();
+        await fetchStaff(); // 🔥 refresh instantly
       } else {
         toast.error(data.message);
       }
-    } catch (error) {
-      toast.error("Server error", error);
+    } catch {
+      toast.error("Server error");
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -106,6 +115,7 @@ function ManageStaff() {
             </span>
           </div>
 
+          {/* ADD STAFF FORM */}
           <div className="p-6 border-b border-gray-300">
             <form onSubmit={handleAddStaff} className="grid grid-cols-3 gap-6">
               <input
@@ -182,54 +192,72 @@ function ManageStaff() {
             </form>
           </div>
 
+          {/* STAFF TABLE */}
           <div className="overflow-x-auto">
-            <table className="w-full text-sm border-collapse">
-              <thead className="bg-slate-100">
-                <tr>
-                  <th className="border border-gray-300 px-3 py-5 text-left">
-                    #
-                  </th>
-                  <th className="border border-gray-300 px-3 py-5 text-left">
-                    Name
-                  </th>
-                  <th className="border border-gray-300 px-3 py-5 text-left">
-                    Email
-                  </th>
-                  <th className="border border-gray-300 px-3 py-5 text-left">
-                    Action
-                  </th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {staff.map((s, index) => (
-                  <tr
-                    key={s._id}
-                    className={`${
-                      index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                    } hover:bg-slate-100`}
-                  >
-                    <td className="border border-gray-300 px-3 py-2">
-                      {index + 1}
-                    </td>
-                    <td className="border border-gray-300 px-3 py-2 font-medium text-slate-700">
-                      {s.name}
-                    </td>
-                    <td className="border border-gray-300 px-3 py-2">
-                      {s.email}
-                    </td>
-                    <td className="border border-gray-300 px-3 py-2">
-                      <button
-                        onClick={() => handleDeleteStaff(s._id)}
-                        className="text-red-500 hover:text-red-700 cursor-pointer"
-                      >
-                        <Trash2 size={18} />
-                      </button>
-                    </td>
+            {loading ? (
+              <div className="flex justify-center py-10">
+                <svg
+                  className="animate-spin h-6 w-6 text-slate-600"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    fill="none"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v8H4z"
+                  />
+                </svg>
+              </div>
+            ) : (
+              <table className="w-full text-sm border-collapse">
+                <thead className="bg-slate-100">
+                  <tr>
+                    <th className="border px-3 py-5 text-left">#</th>
+                    <th className="border px-3 py-5 text-left">Name</th>
+                    <th className="border px-3 py-5 text-left">Email</th>
+                    <th className="border px-3 py-5 text-left">Action</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+
+                <tbody>
+                  {staff.map((s, index) => (
+                    <tr
+                      key={s._id}
+                      className={`${
+                        index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                      } hover:bg-slate-100`}
+                    >
+                      <td className="border px-3 py-2">{index + 1}</td>
+                      <td className="border px-3 py-2 font-medium text-slate-700">
+                        {s.name}
+                      </td>
+                      <td className="border px-3 py-2">{s.email}</td>
+                      <td className="border px-3 py-2">
+                        <button
+                          disabled={deletingId === s._id}
+                          onClick={() => handleDeleteStaff(s._id)}
+                          className="text-red-500 hover:text-red-700 cursor-pointer"
+                        >
+                          {deletingId === s._id ? (
+                            "Deleting..."
+                          ) : (
+                            <Trash2 size={18} />
+                          )}
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
         </div>
       </div>
