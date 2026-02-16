@@ -20,22 +20,20 @@ function ManageStaff() {
 
   const token = localStorage.getItem("token");
 
-  const fetchStaff = async () => {
-    try {
-      const res = await fetch(`${API_URL}/api/admin/staff`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      const data = await res.json();
-      setStaff(data.staff || []);
-    } catch {
-      toast.error("Failed to load staff");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchStaff = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/admin/staff`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        setStaff(data.staff || []);
+      } catch {
+        toast.error("Failed to load staff");
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchStaff();
   }, []);
 
@@ -56,11 +54,11 @@ function ManageStaff() {
       const data = await res.json();
 
       if (data.success) {
-        toast.success("Staff added successfully");
+        setStaff((prev) => [...prev, data.staff]);
         setFormData({ name: "", email: "", password: "" });
-        await fetchStaff(); // 🔥 ensures fresh data
+        toast.success("Staff added successfully");
       } else {
-        toast.error(data.message || "Failed to add staff");
+        toast.error(data.message);
       }
     } catch {
       toast.error("Server error");
@@ -70,9 +68,7 @@ function ManageStaff() {
   };
 
   const handleDeleteStaff = async (id) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this staff?",
-    );
+    const confirmDelete = window.confirm("Delete this staff?");
     if (!confirmDelete) return;
 
     setDeletingId(id);
@@ -86,8 +82,8 @@ function ManageStaff() {
       const data = await res.json();
 
       if (data.success) {
+        setStaff((prev) => prev.filter((s) => s._id !== id));
         toast.success("Staff deleted successfully");
-        await fetchStaff(); // 🔥 refresh instantly
       } else {
         toast.error(data.message);
       }
@@ -115,7 +111,6 @@ function ManageStaff() {
             </span>
           </div>
 
-          {/* ADD STAFF FORM */}
           <div className="p-6 border-b border-gray-300">
             <form onSubmit={handleAddStaff} className="grid grid-cols-3 gap-6">
               <input
@@ -128,7 +123,6 @@ function ManageStaff() {
                 className="border border-gray-300 px-3 py-2 rounded"
                 required
               />
-
               <input
                 type="email"
                 placeholder="Email"
@@ -139,112 +133,70 @@ function ManageStaff() {
                 className="border border-gray-300 px-3 py-2 rounded"
                 required
               />
-
               <input
                 type="password"
                 placeholder="Password"
                 value={formData.password}
                 onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    password: e.target.value,
-                  })
+                  setFormData({ ...formData, password: e.target.value })
                 }
                 className="border border-gray-300 px-3 py-2 rounded"
                 required
               />
-
               <div className="col-span-3 flex justify-end">
                 <button
                   type="submit"
                   disabled={adding}
-                  className={`px-6 py-2 rounded flex items-center gap-2 transition ${
+                  className={`px-6 py-2 rounded ${
                     adding
-                      ? "bg-slate-400 text-white cursor-not-allowed"
-                      : "bg-slate-600 text-white hover:bg-slate-700 cursor-pointer"
+                      ? "bg-slate-400 text-white"
+                      : "bg-slate-600 text-white hover:bg-slate-700"
                   }`}
                 >
-                  {adding ? (
-                    <>
-                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                          fill="none"
-                        />
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8v8H4z"
-                        />
-                      </svg>
-                      Adding...
-                    </>
-                  ) : (
-                    "Add Staff"
-                  )}
+                  {adding ? "Adding..." : "Add Staff"}
                 </button>
               </div>
             </form>
           </div>
 
-          {/* STAFF TABLE */}
           <div className="overflow-x-auto">
             {loading ? (
-              <div className="flex justify-center py-10">
-                <svg
-                  className="animate-spin h-6 w-6 text-slate-600"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                    fill="none"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8v8H4z"
-                  />
-                </svg>
-              </div>
+              <div className="text-center py-10">Loading...</div>
             ) : (
-              <table className="w-full text-sm border-collapse">
+              <table className="w-full text-sm border border-gray-300 border-collapse">
                 <thead className="bg-slate-100">
                   <tr>
-                    <th className="border px-3 py-5 text-left">#</th>
-                    <th className="border px-3 py-5 text-left">Name</th>
-                    <th className="border px-3 py-5 text-left">Email</th>
-                    <th className="border px-3 py-5 text-left">Action</th>
+                    <th className="border border-gray-300 px-4 py-5 text-left">
+                      #
+                    </th>
+                    <th className="border border-gray-300 px-4 py-5 text-left">
+                      Name
+                    </th>
+                    <th className="border border-gray-300 px-4 py-5 text-left">
+                      Email
+                    </th>
+                    <th className="border border-gray-300 px-4 py-5 text-left">
+                      Action
+                    </th>
                   </tr>
                 </thead>
-
                 <tbody>
                   {staff.map((s, index) => (
-                    <tr
-                      key={s._id}
-                      className={`${
-                        index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                      } hover:bg-slate-100`}
-                    >
-                      <td className="border px-3 py-2">{index + 1}</td>
-                      <td className="border px-3 py-2 font-medium text-slate-700">
+                    <tr key={s._id}>
+                      <td className="border border-gray-300 px-4 py-3">
+                        {index + 1}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-3 font-medium">
                         {s.name}
                       </td>
-                      <td className="border px-3 py-2">{s.email}</td>
-                      <td className="border px-3 py-2">
+                      <td className="border border-gray-300 px-4 py-3">
+                        {s.email}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-3">
                         <button
                           disabled={deletingId === s._id}
                           onClick={() => handleDeleteStaff(s._id)}
-                          className="text-red-500 hover:text-red-700 cursor-pointer"
+                          className="text-red-600"
                         >
                           {deletingId === s._id ? (
                             "Deleting..."

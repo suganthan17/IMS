@@ -14,28 +14,26 @@ function AssignComplaints() {
 
   const token = localStorage.getItem("token");
 
-  const loadData = async () => {
-    setLoading(true);
-    try {
-      const res1 = await fetch(`${API_URL}/api/complaints`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data1 = await res1.json();
-      setComplaints(data1.complaints || []);
-
-      const res2 = await fetch(`${API_URL}/api/admin/staff`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data2 = await res2.json();
-      setStaff(data2.staff || []);
-    } catch {
-      toast.error("Failed to load data");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const loadData = async () => {
+      try {
+        const res1 = await fetch(`${API_URL}/api/complaints`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data1 = await res1.json();
+        setComplaints(data1.complaints || []);
+
+        const res2 = await fetch(`${API_URL}/api/admin/staff`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data2 = await res2.json();
+        setStaff(data2.staff || []);
+      } catch {
+        toast.error("Failed to load data");
+      } finally {
+        setLoading(false);
+      }
+    };
     loadData();
   }, []);
 
@@ -54,22 +52,16 @@ function AssignComplaints() {
       const data = await res.json();
 
       if (data.success) {
+        setComplaints((prev) =>
+          prev.map((c) => (c._id === complaintId ? data.complaint : c)),
+        );
         toast.success("Updated successfully");
-        await loadData();
       }
     } catch {
       toast.error("Update failed");
     } finally {
       setProcessingId(null);
     }
-  };
-
-  const removeStaff = async (complaintId, status) => {
-    if (status === "Resolved") {
-      toast.error("Cannot modify a resolved complaint");
-      return;
-    }
-    await assignStaff(complaintId, null);
   };
 
   return (
@@ -81,7 +73,7 @@ function AssignComplaints() {
         <h1 className="text-xl font-bold mb-4">Assign Complaints to Staff</h1>
 
         {loading ? (
-          <div className="text-center py-10 text-slate-600">Loading...</div>
+          <div className="text-center py-10">Loading...</div>
         ) : (
           <div className="bg-white border border-slate-500 rounded-sm">
             <div className="bg-slate-500 text-white px-4 py-3 font-medium flex items-center gap-2">
@@ -93,39 +85,30 @@ function AssignComplaints() {
               <table className="w-full text-sm border border-gray-300 border-collapse">
                 <thead className="bg-slate-100">
                   <tr>
-                    <th className="border border-gray-300 px-4 py-3 text-left">
+                    <th className="border border-gray-300 px-4 py-5 text-left">
                       Issue
                     </th>
-                    <th className="border border-gray-300 px-4 py-3 text-center">
+                    <th className="border border-gray-300 px-4 py-5 text-center">
                       Staff
                     </th>
-                    <th className="border border-gray-300 px-4 py-3 text-center">
+                    <th className="border border-gray-300 px-4 py-5 text-center">
                       Action
                     </th>
                   </tr>
                 </thead>
-
                 <tbody>
-                  {complaints.map((c, index) => (
-                    <tr
-                      key={c._id}
-                      className={`${
-                        index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                      } hover:bg-slate-100`}
-                    >
-                      <td className="border border-gray-300 px-4 py-3 font-medium text-slate-700">
+                  {complaints.map((c) => (
+                    <tr key={c._id}>
+                      <td className="border border-gray-300 px-4 py-3">
                         {c.summary}
                       </td>
-
                       <td className="border border-gray-300 px-4 py-3 text-center">
                         {c.assignedTo ? (
-                          <span className="text-slate-700 font-medium">
-                            {c.assignedTo.name}
-                          </span>
+                          c.assignedTo.name
                         ) : (
                           <select
+                            className="border border-gray-300 px-2 py-1 rounded"
                             disabled={processingId === c._id}
-                            className="border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-slate-500"
                             onChange={(e) => assignStaff(c._id, e.target.value)}
                           >
                             <option value="">Select staff</option>
@@ -137,19 +120,18 @@ function AssignComplaints() {
                           </select>
                         )}
                       </td>
-
                       <td className="border border-gray-300 px-4 py-3 text-center">
                         {c.assignedTo && (
                           <button
                             disabled={processingId === c._id}
-                            onClick={() => removeStaff(c._id, c.status)}
-                            className={`${
-                              processingId === c._id
-                                ? "text-gray-400 cursor-not-allowed"
-                                : "text-red-600 hover:text-red-700 cursor-pointer"
-                            }`}
+                            onClick={() => assignStaff(c._id, null)}
+                            className="text-red-600"
                           >
-                            <Trash2 size={18} />
+                            {processingId === c._id ? (
+                              "Updating..."
+                            ) : (
+                              <Trash2 size={18} />
+                            )}
                           </button>
                         )}
                       </td>
