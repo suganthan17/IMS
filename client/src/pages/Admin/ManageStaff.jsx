@@ -21,21 +21,22 @@ function ManageStaff() {
   const token = localStorage.getItem("token");
 
   useEffect(() => {
-    const fetchStaff = async () => {
-      try {
-        const res = await fetch(`${API_URL}/api/admin/staff`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const data = await res.json();
-        setStaff(data.staff || []);
-      } catch {
-        toast.error("Failed to load staff");
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchStaff();
   }, []);
+
+  const fetchStaff = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/admin/staff`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      setStaff(data.staff || []);
+    } catch {
+      toast.error("Failed to load staff");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleAddStaff = async (e) => {
     e.preventDefault();
@@ -54,11 +55,9 @@ function ManageStaff() {
       const data = await res.json();
 
       if (data.success) {
+        setStaff((prev) => [...prev, data.staff]);
+        setFormData({ name: "", email: "", password: "" });
         toast.success("Staff added successfully");
-
-        setTimeout(() => {
-          window.location.reload();
-        }, 800);
       } else {
         toast.error(data.message);
       }
@@ -70,8 +69,7 @@ function ManageStaff() {
   };
 
   const handleDeleteStaff = async (id) => {
-    const confirmDelete = window.confirm("Delete this staff?");
-    if (!confirmDelete) return;
+    if (!window.confirm("Delete this staff?")) return;
 
     setDeletingId(id);
 
@@ -84,11 +82,8 @@ function ManageStaff() {
       const data = await res.json();
 
       if (data.success) {
+        setStaff((prev) => prev.filter((s) => s._id !== id));
         toast.success("Staff deleted successfully");
-
-        setTimeout(() => {
-          window.location.reload();
-        }, 800);
       } else {
         toast.error(data.message);
       }
@@ -128,6 +123,7 @@ function ManageStaff() {
                 className="border border-gray-300 px-3 py-2 rounded"
                 required
               />
+
               <input
                 type="email"
                 placeholder="Email"
@@ -138,6 +134,7 @@ function ManageStaff() {
                 className="border border-gray-300 px-3 py-2 rounded"
                 required
               />
+
               <input
                 type="password"
                 placeholder="Password"
@@ -153,11 +150,7 @@ function ManageStaff() {
                 <button
                   type="submit"
                   disabled={adding}
-                  className={`px-6 py-2 rounded ${
-                    adding
-                      ? "bg-slate-400 text-white cursor-not-allowed"
-                      : "bg-slate-600 text-white hover:bg-slate-700"
-                  }`}
+                  className="px-6 py-2 bg-slate-600 text-white rounded hover:bg-slate-700"
                 >
                   {adding ? "Adding..." : "Add Staff"}
                 </button>
@@ -167,27 +160,7 @@ function ManageStaff() {
 
           <div className="overflow-x-auto">
             {loading ? (
-              <div className="flex justify-center py-10">
-                <svg
-                  className="animate-spin h-6 w-6 text-slate-600"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                    fill="none"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8v8H4z"
-                  />
-                </svg>
-              </div>
+              <div className="text-center py-10">Loading...</div>
             ) : (
               <table className="w-full text-sm border border-gray-300 border-collapse">
                 <thead className="bg-slate-100">
@@ -208,16 +181,11 @@ function ManageStaff() {
                 </thead>
                 <tbody>
                   {staff.map((s, index) => (
-                    <tr
-                      key={s._id}
-                      className={`${
-                        index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                      } hover:bg-slate-100`}
-                    >
+                    <tr key={s._id}>
                       <td className="border border-gray-300 px-4 py-3">
                         {index + 1}
                       </td>
-                      <td className="border border-gray-300 px-4 py-3 font-medium text-slate-700">
+                      <td className="border border-gray-300 px-4 py-3 font-medium">
                         {s.name}
                       </td>
                       <td className="border border-gray-300 px-4 py-3">
@@ -227,11 +195,7 @@ function ManageStaff() {
                         <button
                           disabled={deletingId === s._id}
                           onClick={() => handleDeleteStaff(s._id)}
-                          className={`${
-                            deletingId === s._id
-                              ? "text-gray-400 cursor-not-allowed"
-                              : "text-red-600 hover:text-red-700"
-                          }`}
+                          className="text-red-600"
                         >
                           {deletingId === s._id ? (
                             "Deleting..."

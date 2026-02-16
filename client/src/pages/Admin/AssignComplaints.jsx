@@ -54,13 +54,13 @@ function AssignComplaints() {
       const data = await res.json();
 
       if (data.success) {
-        toast.success("Updated successfully");
+        setComplaints((prev) =>
+          prev.map((c) => (c._id === complaintId ? data.complaint : c)),
+        );
 
-        setTimeout(() => {
-          window.location.reload();
-        }, 800);
+        toast.success("Updated successfully");
       } else {
-        toast.error(data.message || "Update failed");
+        toast.error(data.message);
       }
     } catch {
       toast.error("Server error");
