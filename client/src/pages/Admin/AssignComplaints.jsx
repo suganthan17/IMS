@@ -15,28 +15,29 @@ function AssignComplaints() {
   const token = localStorage.getItem("token");
 
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        const res1 = await fetch(`${API_URL}/api/complaints`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const data1 = await res1.json();
-        setComplaints(data1.complaints || []);
-
-        const res2 = await fetch(`${API_URL}/api/admin/staff`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const data2 = await res2.json();
-        setStaff(data2.staff || []);
-      } catch {
-        toast.error("Failed to load data");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     loadData();
   }, []);
+
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const res1 = await fetch(`${API_URL}/api/complaints`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data1 = await res1.json();
+      setComplaints(data1.complaints || []);
+
+      const res2 = await fetch(`${API_URL}/api/admin/staff`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data2 = await res2.json();
+      setStaff(data2.staff || []);
+    } catch {
+      toast.error("Failed to load data");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const assignStaff = async (complaintId, staffId) => {
     setProcessingId(complaintId);
@@ -48,14 +49,25 @@ function AssignComplaints() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ staffId }),
+        body: JSON.stringify({
+          staffId: staffId || null,
+        }),
       });
 
       const data = await res.json();
 
       if (data.success) {
         setComplaints((prev) =>
-          prev.map((c) => (c._id === complaintId ? data.complaint : c)),
+          prev.map((c) =>
+            c._id === complaintId
+              ? {
+                  ...c,
+                  assignedTo: staffId
+                    ? staff.find((s) => s._id === staffId)
+                    : null,
+                }
+              : c,
+          ),
         );
 
         toast.success("Updated successfully");
@@ -78,7 +90,7 @@ function AssignComplaints() {
         <h1 className="text-xl font-bold mb-4">Assign Complaints to Staff</h1>
 
         {loading ? (
-          <div className="flex justify-center py-10">
+          <div className="flex justify-center py-12">
             <svg
               className="animate-spin h-6 w-6 text-slate-600"
               viewBox="0 0 24 24"
@@ -132,17 +144,48 @@ function AssignComplaints() {
                     >
                       <td className="border border-gray-300 px-4 py-3 font-medium text-slate-700">
                         {c.summary}
+                        {c.status === "Resolved" && (
+                          <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded">
+                            Resolved
+                          </span>
+                        )}
                       </td>
 
                       <td className="border border-gray-300 px-4 py-3 text-center">
-                        {c.assignedTo ? (
+                        {processingId === c._id ? (
+                          <div className="flex justify-center">
+                            <svg
+                              className="animate-spin h-4 w-4 text-slate-600"
+                              viewBox="0 0 24 24"
+                            >
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                                fill="none"
+                              />
+                              <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8v8H4z"
+                              />
+                            </svg>
+                          </div>
+                        ) : c.assignedTo ? (
                           <span className="font-medium text-slate-700">
                             {c.assignedTo.name}
                           </span>
                         ) : (
                           <select
-                            className="border border-gray-300 px-2 py-1 rounded focus:outline-none focus:ring-1 focus:ring-slate-500"
-                            disabled={processingId === c._id}
+                            disabled={c.status === "Resolved"}
+                            className={`border border-gray-300 px-2 py-1 rounded focus:outline-none focus:ring-1 focus:ring-slate-500 ${
+                              c.status === "Resolved"
+                                ? "bg-gray-200 cursor-not-allowed"
+                                : "cursor-pointer"
+                            }`}
                             onChange={(e) => assignStaff(c._id, e.target.value)}
                           >
                             <option value="">Select staff</option>
@@ -158,16 +201,36 @@ function AssignComplaints() {
                       <td className="border border-gray-300 px-4 py-3 text-center">
                         {c.assignedTo && (
                           <button
-                            disabled={processingId === c._id}
+                            disabled={
+                              processingId === c._id || c.status === "Resolved"
+                            }
                             onClick={() => assignStaff(c._id, null)}
                             className={`${
-                              processingId === c._id
+                              processingId === c._id || c.status === "Resolved"
                                 ? "text-gray-400 cursor-not-allowed"
-                                : "text-red-600 hover:text-red-700"
+                                : "text-red-600 hover:text-red-700 cursor-pointer"
                             }`}
                           >
                             {processingId === c._id ? (
-                              "Updating..."
+                              <svg
+                                className="animate-spin h-4 w-4"
+                                viewBox="0 0 24 24"
+                              >
+                                <circle
+                                  className="opacity-25"
+                                  cx="12"
+                                  cy="12"
+                                  r="10"
+                                  stroke="currentColor"
+                                  strokeWidth="4"
+                                  fill="none"
+                                />
+                                <path
+                                  className="opacity-75"
+                                  fill="currentColor"
+                                  d="M4 12a8 8 0 018-8v8H4z"
+                                />
+                              </svg>
                             ) : (
                               <Trash2 size={18} />
                             )}

@@ -13,15 +13,15 @@ export const sendEmail = async (to, subject, htmlContent) => {
       },
     });
 
-    await transporter.sendMail({
+    const info = await transporter.sendMail({
       from: `"IMS ADMIN" <${process.env.EMAIL_USER}>`,
       to,
       subject,
       html: htmlContent,
     });
 
-    console.log("Email sent successfully");
+    console.log("Email sent:", info.response);
   } catch (error) {
-    console.error("Email Error:", error.message);
+    console.error("Email error:", error);
   }
 };

@@ -1,6 +1,7 @@
 import User from "../models/User.js";
 import Complaint from "../models/Complaint.js";
 import bcrypt from "bcryptjs";
+import { sendEmail } from "../utils/sendEmail.js";
 
 export const getAllMaintenanceStaff = async (req, res) => {
   try {
@@ -39,7 +40,20 @@ export const addStaff = async (req, res) => {
       message: "Staff created successfully",
       staff: newStaff,
     });
+
+    sendEmail(
+      email,
+      "Your IMS Staff Account Credentials",
+      `
+        <h3>Hello ${name},</h3>
+        <p>Your staff account has been created in IMS.</p>
+        <p><b>Email:</b> ${email}</p>
+        <p><b>Password:</b> ${password}</p>
+        <p>Please login and change your password immediately.</p>
+      `,
+    );
   } catch (error) {
+    console.error(error);
     res.status(500).json({
       success: false,
       message: error.message,
@@ -71,12 +85,15 @@ export const deleteStaff = async (req, res) => {
   }
 };
 
+import mongoose from "mongoose";
+
 export const assignComplaint = async (req, res) => {
   try {
     const { staffId } = req.body;
+
     const complaint = await Complaint.findById(req.params.id).populate(
-      "assignedTo",
-      "name email"
+      "userId",
+      "name email",
     );
 
     if (!complaint) {
@@ -86,17 +103,29 @@ export const assignComplaint = async (req, res) => {
       });
     }
 
+    if (complaint.status === "Resolved") {
+      return res.status(400).json({
+        success: false,
+        message: "Resolved complaints cannot be modified",
+      });
+    }
+
+    // REMOVE ASSIGNMENT
     if (!staffId) {
       complaint.assignedTo = null;
       complaint.status = "Pending";
       await complaint.save();
 
-      const updatedComplaint = await Complaint.findById(complaint._id)
-        .populate("assignedTo", "name email");
-
       return res.json({
         success: true,
-        complaint: updatedComplaint,
+        complaint,
+      });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(staffId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid staff ID",
       });
     }
 
@@ -112,17 +141,15 @@ export const assignComplaint = async (req, res) => {
     complaint.status = "Assigned";
     await complaint.save();
 
-    const updatedComplaint = await Complaint.findById(complaint._id)
-      .populate("assignedTo", "name email");
-
-    res.json({
+    return res.json({
       success: true,
-      complaint: updatedComplaint,
+      complaint,
     });
   } catch (error) {
+    console.error("Assign Complaint Error:", error);
     res.status(500).json({
       success: false,
-      message: error.message,
+      message: "Server error",
     });
   }
 };
