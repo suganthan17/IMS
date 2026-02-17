@@ -2,8 +2,14 @@ import nodemailer from "nodemailer";
 
 export const sendEmail = async (to, subject, htmlContent) => {
   try {
+    console.log("----- EMAIL DEBUG START -----");
+    console.log("EMAIL_USER:", process.env.EMAIL_USER);
+    console.log("EMAIL_PASS exists:", !!process.env.EMAIL_PASS);
+    console.log("Sending email to:", to);
+
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
       console.error("Email credentials missing in environment variables");
+      console.log("----- EMAIL DEBUG END -----");
       return;
     }
 
@@ -28,8 +34,11 @@ export const sendEmail = async (to, subject, htmlContent) => {
     });
 
     console.log("Email sent successfully:", info.response);
+    console.log("----- EMAIL DEBUG END -----");
+
   } catch (error) {
     console.error("Email sending failed:");
-    console.error(error.message);
+    console.error(error);
+    console.log("----- EMAIL DEBUG END -----");
   }
 };
