@@ -6,13 +6,12 @@ import UserSidebar from "../../components/UserSidebar";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-
 function StatusTable({ title, data, navigate }) {
   const statusBadge = (status) => {
     if (status === "Resolved") return "bg-green-200 text-green-800";
     if (status === "In Progress") return "bg-yellow-200 text-yellow-800";
     if (status === "Assigned") return "bg-blue-200 text-blue-800";
-    return "bg-orange-200 text-orange-800"; 
+    return "bg-orange-200 text-orange-800";
   };
 
   return (
@@ -29,7 +28,7 @@ function StatusTable({ title, data, navigate }) {
         <p className="p-4 text-sm text-gray-600">No records found.</p>
       ) : (
         <div className="overflow-x-auto">
-          <table className="w-full text-sm border-collapse">
+          <table className="w-full text-sm border-collapse min-w-[700px]">
             <thead className="bg-slate-100">
               <tr>
                 <th className="border border-gray-300 px-3 py-2 text-left">
@@ -127,7 +126,6 @@ function Status() {
   }, [navigate]);
 
   const pendingIssues = complaints.filter((c) => c.status !== "Resolved");
-
   const resolvedIssues = complaints.filter((c) => c.status === "Resolved");
 
   return (
@@ -135,7 +133,8 @@ function Status() {
       <Navbar />
       <UserSidebar />
 
-      <div className="ml-56 mt-14 p-6 min-h-screen bg-gray-100">
+      {/* Responsive Wrapper */}
+      <div className="mt-14 p-4 sm:p-6 min-h-screen bg-gray-100 md:ml-56">
         <h1 className="text-xl font-bold mb-6 text-black">Complaint Status</h1>
 
         {loading ? (

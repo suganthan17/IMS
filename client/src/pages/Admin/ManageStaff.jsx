@@ -100,7 +100,7 @@ function ManageStaff() {
       <Navbar />
       <AdminSidebar />
 
-      <div className="ml-56 mt-14 p-6 min-h-screen bg-gray-100">
+      <div className="mt-14 p-4 sm:p-6 min-h-screen bg-gray-100 md:ml-56">
         <h1 className="text-xl font-bold mb-4">Manage Maintenance Staff</h1>
 
         <div className="bg-white border border-slate-500 rounded-sm mb-6">
@@ -112,16 +112,22 @@ function ManageStaff() {
             </span>
           </div>
 
-          <div className="p-6 border-b border-gray-300">
-            <form onSubmit={handleAddStaff} className="grid grid-cols-3 gap-6">
+          <div className="p-4 sm:p-6 border-b border-gray-300">
+            <form
+              onSubmit={handleAddStaff}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
+            >
               <input
                 type="text"
                 placeholder="Name"
                 value={formData.name}
                 onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
+                  setFormData({
+                    ...formData,
+                    name: e.target.value,
+                  })
                 }
-                className="border border-gray-300 px-3 py-2 rounded"
+                className="border border-gray-300 px-3 py-2 rounded w-full"
                 required
               />
 
@@ -130,9 +136,12 @@ function ManageStaff() {
                 placeholder="Email"
                 value={formData.email}
                 onChange={(e) =>
-                  setFormData({ ...formData, email: e.target.value })
+                  setFormData({
+                    ...formData,
+                    email: e.target.value,
+                  })
                 }
-                className="border border-gray-300 px-3 py-2 rounded"
+                className="border border-gray-300 px-3 py-2 rounded w-full"
                 required
               />
 
@@ -141,13 +150,16 @@ function ManageStaff() {
                 placeholder="Password"
                 value={formData.password}
                 onChange={(e) =>
-                  setFormData({ ...formData, password: e.target.value })
+                  setFormData({
+                    ...formData,
+                    password: e.target.value,
+                  })
                 }
-                className="border border-gray-300 px-3 py-2 rounded"
+                className="border border-gray-300 px-3 py-2 rounded w-full"
                 required
               />
 
-              <div className="col-span-3 flex justify-end">
+              <div className="col-span-1 sm:col-span-2 lg:col-span-3 flex justify-end">
                 <button
                   type="submit"
                   disabled={adding}
@@ -205,7 +217,7 @@ function ManageStaff() {
                 </svg>
               </div>
             ) : (
-              <table className="w-full text-sm border border-gray-300 border-collapse">
+              <table className="w-full text-sm border border-gray-300 border-collapse min-w-[700px]">
                 <thead className="bg-slate-100">
                   <tr>
                     <th className="border border-gray-300 px-4 py-5 text-left">

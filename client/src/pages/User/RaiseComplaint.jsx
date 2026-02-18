@@ -69,14 +69,12 @@ function RaiseComplaint() {
 
       if (response.ok) {
         toast.success("Complaint submitted successfully!");
-
         setFormData({
           category: "",
           summary: "",
           location: "",
           description: "",
         });
-
         setImage(null);
         setPreview(null);
       } else {
@@ -94,10 +92,11 @@ function RaiseComplaint() {
       <Navbar />
       <UserSidebar />
 
-      <div className="ml-56 mt-14 p-6 min-h-screen bg-gray-100">
+      {/* Responsive Wrapper */}
+      <div className="mt-14 p-4 sm:p-6 min-h-screen bg-gray-100 md:ml-56">
         <h1 className="text-xl font-bold mb-4">Raise a Complaint</h1>
 
-        <div className="bg-white border border-slate-500 rounded-sm mt-5 max-w-6xl">
+        <div className="bg-white border border-slate-500 rounded-sm mt-5 max-w-6xl w-full overflow-x-auto">
           <div className="bg-slate-500 text-white px-4 py-2 font-medium">
             <PencilLine className="inline-block mr-2" size={20} />
             Enter Issue Details
@@ -105,6 +104,7 @@ function RaiseComplaint() {
 
           <form onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 md:grid-cols-4 border-t">
+              {/* Category */}
               <div className="bg-gray-100 px-4 py-3 font-medium md:border-r border-b border-gray-300">
                 Category
               </div>
@@ -113,7 +113,7 @@ function RaiseComplaint() {
                   name="category"
                   value={formData.category}
                   onChange={handleChange}
-                  className="w-64 border border-gray-400 px-2 py-1 text-sm"
+                  className="w-full md:w-64 border border-gray-400 px-2 py-1 text-sm"
                   required
                 >
                   <option value="">Select Category</option>
@@ -152,6 +152,7 @@ function RaiseComplaint() {
                 </select>
               </div>
 
+              {/* Summary */}
               <div className="bg-gray-100 px-4 py-3 font-medium md:border-r border-b border-gray-300">
                 Summary
               </div>
@@ -166,6 +167,7 @@ function RaiseComplaint() {
                 />
               </div>
 
+              {/* Location */}
               <div className="bg-gray-100 px-4 py-3 font-medium md:border-r border-b border-gray-300">
                 Location
               </div>
@@ -180,6 +182,7 @@ function RaiseComplaint() {
                 />
               </div>
 
+              {/* Description */}
               <div className="bg-gray-100 px-4 py-3 font-medium md:border-r border-b border-gray-300">
                 Description
               </div>
@@ -194,10 +197,10 @@ function RaiseComplaint() {
                 />
               </div>
 
+              {/* Upload */}
               <div className="bg-gray-100 px-4 py-3 font-medium md:border-r border-gray-300">
                 Upload Image (optional)
               </div>
-
               <div className="md:col-span-3 px-4 py-3">
                 {!image && (
                   <label className="inline-block cursor-pointer bg-slate-600 text-white text-sm px-4 py-1.5 rounded hover:bg-slate-700 transition">
@@ -223,14 +226,13 @@ function RaiseComplaint() {
                       <span className="text-sm text-slate-700 truncate">
                         {image.name}
                       </span>
-
                       <button
                         type="button"
                         onClick={() => {
                           setImage(null);
                           setPreview(null);
                         }}
-                        className="text-red-600 cursor-pointer hover:text-red-700"
+                        className="text-red-600 hover:text-red-700"
                       >
                         <Trash2 size={18} />
                       </button>
@@ -246,6 +248,7 @@ function RaiseComplaint() {
               </div>
             </div>
 
+            {/* Submit */}
             <div className="px-4 py-4 border-t border-gray-300 bg-gray-100">
               <button
                 type="submit"

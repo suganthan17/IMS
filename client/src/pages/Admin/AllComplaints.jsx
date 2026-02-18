@@ -5,7 +5,6 @@ import AdminSidebar from "../../components/AdminSidebar";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-
 function AllComplaints() {
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -47,10 +46,10 @@ function AllComplaints() {
       <Navbar />
       <AdminSidebar />
 
-      <div className="ml-56 mt-14 p-6 min-h-screen bg-gray-100">
+      <div className="mt-14 p-4 sm:p-6 min-h-screen bg-gray-100 md:ml-56">
         <h1 className="text-xl font-bold mb-4">All Complaints</h1>
 
-        <div className="mb-4 flex items-center gap-3">
+        <div className="mb-4 flex flex-col sm:flex-row sm:items-center gap-3">
           <label className="text-sm font-medium text-slate-700">
             Filter by Status:
           </label>
@@ -58,7 +57,7 @@ function AllComplaints() {
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="border border-gray-300 rounded-md px-3 py-1 cursor-pointer text-sm"
+            className="border border-gray-300 rounded-md px-3 py-1 cursor-pointer text-sm w-full sm:w-auto"
           >
             <option value="All">All</option>
             <option value="Pending">Pending</option>
@@ -84,7 +83,7 @@ function AllComplaints() {
             </p>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-sm border-collapse">
+              <table className="w-full text-sm border-collapse min-w-[900px]">
                 <thead className="bg-slate-100">
                   <tr>
                     <th className="border border-gray-300 px-3 py-5 text-left">

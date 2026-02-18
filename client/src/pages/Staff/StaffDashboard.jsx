@@ -4,9 +4,7 @@ import { ArrowUpRight } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import StaffSidebar from "../../components/StaffSidebar";
 
-
 const API_URL = import.meta.env.VITE_API_URL;
-
 
 function StaffDashboard() {
   const navigate = useNavigate();
@@ -28,9 +26,16 @@ function StaffDashboard() {
         if (data.success) {
           const complaints = data.complaints;
 
-          const myComplaints = complaints.filter(
-            (c) => c.assignedTo && c.assignedTo._id === staffId,
-          );
+          const myComplaints = complaints.filter((c) => {
+            if (!c.assignedTo) return false;
+
+            const assignedId =
+              typeof c.assignedTo === "object"
+                ? c.assignedTo._id
+                : c.assignedTo;
+
+            return assignedId?.toString() === staffId;
+          });
 
           setTotalAssigned(myComplaints.length);
 
@@ -39,7 +44,7 @@ function StaffDashboard() {
           );
         }
       })
-      .catch((err) => console.error(err));
+      .catch(() => {});
   }, []);
 
   return (
@@ -47,11 +52,10 @@ function StaffDashboard() {
       <Navbar />
       <StaffSidebar />
 
-      <div className="ml-56 mt-14 p-6 min-h-screen bg-gray-100">
+      <div className="mt-14 p-4 sm:p-6 min-h-screen bg-gray-100 md:ml-56">
         <h1 className="text-xl font-bold mb-6">Maintenance Dashboard</h1>
 
         <div className="flex flex-wrap gap-4">
-          {/* Total Assigned */}
           <div className="w-full sm:w-[48%] lg:w-[23%] bg-white border border-gray-300 rounded p-4 cursor-pointer hover:bg-gray-50 flex justify-between items-center">
             <div>
               <p className="text-sm text-gray-600">Total Assigned</p>
@@ -60,7 +64,6 @@ function StaffDashboard() {
             <ArrowUpRight size={18} className="text-gray-500" />
           </div>
 
-          {/* Resolved */}
           <div
             onClick={() => navigate("/staff/my-complaints")}
             className="w-full sm:w-[48%] lg:w-[23%] bg-white border border-gray-300 rounded p-4 cursor-pointer hover:bg-gray-50 flex justify-between items-center"

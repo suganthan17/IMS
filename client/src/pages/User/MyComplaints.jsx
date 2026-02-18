@@ -43,7 +43,7 @@ function MyComplaints() {
       <Navbar />
       <UserSidebar />
 
-      <div className="ml-56 mt-14 p-6 min-h-screen bg-gray-100">
+      <div className="mt-14 p-4 sm:p-6 min-h-screen bg-gray-100 md:ml-56">
         <h1 className="text-xl font-bold mb-6">My Complaints</h1>
 
         {loading ? (

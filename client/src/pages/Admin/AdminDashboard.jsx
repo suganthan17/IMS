@@ -6,7 +6,6 @@ import AdminSidebar from "../../components/AdminSidebar";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-
 function AdminDashboard() {
   const navigate = useNavigate();
 
@@ -27,15 +26,13 @@ function AdminDashboard() {
       .then((data) => {
         if (data.success) {
           const users = data.users;
-
           setTotalUsers(users.filter((u) => u.role === "user").length);
-
           setMaintenanceStaff(
             users.filter((u) => u.role === "maintenance").length,
           );
         }
       })
-      .catch((err) => console.error(err));
+      .catch(() => {});
 
     fetch(`${API_URL}/api/complaints`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -60,7 +57,7 @@ function AdminDashboard() {
           );
         }
       })
-      .catch((err) => console.error(err));
+      .catch(() => {});
   }, []);
 
   return (
@@ -68,7 +65,7 @@ function AdminDashboard() {
       <Navbar />
       <AdminSidebar />
 
-      <div className="ml-56 mt-14 p-6 min-h-screen bg-gray-100">
+      <div className="mt-14 p-4 sm:p-6 min-h-screen bg-gray-100 md:ml-56">
         <h1 className="text-xl font-bold mb-4">Admin Dashboard</h1>
 
         <div className="flex flex-wrap gap-4 mt-6 mb-6">
@@ -137,7 +134,7 @@ function AdminDashboard() {
         </div>
       </div>
     </div>
-  );  
+  );
 }
 
 export default AdminDashboard;

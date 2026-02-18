@@ -76,7 +76,7 @@ function AssignedComplaintDetails() {
       <Navbar />
       <StaffSidebar />
 
-      <div className="ml-56 mt-14 p-6 min-h-screen bg-gray-100">
+      <div className="mt-14 p-4 sm:p-6 min-h-screen bg-gray-100 md:ml-56">
         <h1 className="text-xl font-bold text-black">Complaint Details</h1>
 
         <div className="flex items-center gap-3 mt-6">
@@ -89,13 +89,13 @@ function AssignedComplaintDetails() {
           </button>
         </div>
 
-        <div className="bg-white border mt-3 border-slate-500 rounded-sm">
+        <div className="bg-white border mt-3 border-slate-500 rounded-sm overflow-x-auto">
           <div className="flex items-center gap-2 bg-slate-500 text-white px-4 py-2 font-medium">
             <List size={18} />
             <span>Assigned Complaint Details</span>
           </div>
 
-          <table className="w-full text-sm border-collapse">
+          <table className="w-full text-sm border-collapse min-w-[700px]">
             <tbody>
               <tr>
                 <td className="border border-gray-300 bg-slate-100 px-3 py-2 font-medium">
@@ -157,7 +157,6 @@ function AssignedComplaintDetails() {
                 </td>
               </tr>
 
-              {/* Combined Image Row */}
               <tr>
                 <td className="border border-gray-300 bg-slate-100 px-3 py-2 font-medium align-top">
                   Before Image
@@ -168,7 +167,7 @@ function AssignedComplaintDetails() {
                     <img
                       src={complaint.beforeImage}
                       alt="Before"
-                      className="w-56 rounded border shadow-sm cursor-pointer hover:scale-105 transition"
+                      className="w-40 sm:w-56 rounded border shadow-sm cursor-pointer hover:scale-105 transition"
                       onClick={() =>
                         window.open(complaint.beforeImage, "_blank")
                       }
@@ -190,7 +189,7 @@ function AssignedComplaintDetails() {
                       <img
                         src={complaint.afterImage}
                         alt="After"
-                        className="w-56 rounded border shadow-sm cursor-pointer hover:scale-105 transition"
+                        className="w-40 sm:w-56 rounded border shadow-sm cursor-pointer hover:scale-105 transition"
                         onClick={() =>
                           window.open(complaint.afterImage, "_blank")
                         }
@@ -200,9 +199,7 @@ function AssignedComplaintDetails() {
                     )
                   ) : (
                     <div className="space-y-3">
-                      {/* Button + Trash Row */}
                       <div className="flex items-center gap-3">
-                        {/* Choose File Button */}
                         <label className="inline-block cursor-pointer bg-slate-600 text-white px-4 py-1.5 text-sm rounded hover:bg-slate-700 transition">
                           Choose File
                           <input
@@ -219,7 +216,6 @@ function AssignedComplaintDetails() {
                           />
                         </label>
 
-                        {/* Trash Icon */}
                         {afterImage && (
                           <button
                             type="button"
@@ -227,23 +223,21 @@ function AssignedComplaintDetails() {
                               setAfterImage(null);
                               setPreview(null);
                             }}
-                            className="p-2  text-red-600 cursor-pointer rounded transition"
+                            className="p-2 text-red-600 cursor-pointer rounded transition"
                           >
                             <Trash2 size={16} />
                           </button>
                         )}
                       </div>
 
-                      {/* Preview */}
                       {preview && (
                         <img
                           src={preview}
                           alt="Preview"
-                          className="w-40 rounded border"
+                          className="w-32 sm:w-40 rounded border"
                         />
                       )}
 
-                      {/* Resolve Button */}
                       <button
                         onClick={updateStatus}
                         className="bg-lime-600 text-white px-4 py-2 rounded cursor-pointer hover:bg-green-700 transition"
