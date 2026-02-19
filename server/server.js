@@ -9,6 +9,7 @@ import createAdmin from "./utils/createAdmin.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import maintenanceRoutes from "./routes/maintenanceRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import aiRoutes from "./routes/aiRoutes.js";
 
 dotenv.config();
 
@@ -49,6 +50,7 @@ app.use("/api/complaints", complaintRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/maintenance", maintenanceRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/ai", aiRoutes);
 
 app.get("/", (req, res) => {
   res.send("IMS Backend Running");

@@ -74,7 +74,7 @@ function UserSidebar() {
         <div className="border-t border-gray-300">
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-5 py-4 text-sm text-red-600 hover:bg-red-50 transition-colors"
+            className="w-full flex items-center cursor-pointer gap-3 px-5 py-4 text-sm text-red-600 hover:bg-red-50 transition-colors"
           >
             <LogOut size={18} />
             Logout

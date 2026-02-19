@@ -109,7 +109,7 @@ function Navbar() {
 
                 <li
                   onClick={handleLogout}
-                  className="flex items-center gap-2 px-4 py-2 hover:bg-red-400 cursor-pointer text-red-600"
+                  className="flex items-center gap-2 px-4 py-2 hover:bg-red-400 cursor-pointer text-red-600 hover:text-black"
                 >
                   <LogOut size={14} />
                   Logout

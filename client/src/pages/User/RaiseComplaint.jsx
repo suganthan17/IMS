@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../../components/Navbar";
 import UserSidebar from "../../components/UserSidebar";
-import { PencilLine, Trash2 } from "lucide-react";
+import { PencilLine, Trash2, WandSparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -20,6 +20,7 @@ function RaiseComplaint() {
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -87,6 +88,50 @@ function RaiseComplaint() {
     }
   };
 
+  const generateWithAI = async () => {
+    if (!formData.category) {
+      toast.error("Please select category and fill the location first");
+      return;
+    }
+
+    try {
+      setAiLoading(true);
+
+      const token = localStorage.getItem("token");
+
+      const response = await fetch(`${API_URL}/api/ai/suggest-complaint`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          category: formData.category,
+          location: formData.location,
+        }),
+      });
+
+      const data = await response.json();
+      console.log(data);
+
+      if (data.success) {
+        setFormData((prev) => ({
+          ...prev,
+          summary: data.suggestion.summary,
+          description: data.suggestion.description,
+        }));
+
+        toast.success("AI suggestion generated");
+      } else {
+        toast.error("AI generation failed");
+      }
+    } catch {
+      toast.error("Server error");
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
   return (
     <div>
       <Navbar />
@@ -109,62 +154,71 @@ function RaiseComplaint() {
                 Category
               </div>
               <div className="md:col-span-3 px-4 py-3 border-b border-gray-300">
-                <select
-                  name="category"
-                  value={formData.category}
-                  onChange={handleChange}
-                  className="w-full md:w-64 border border-gray-400 px-2 py-1 text-sm"
-                  required
-                >
-                  <option value="">Select Category</option>
-                  <option value="Water Supply">Water Supply</option>
-                  <option value="Drainage">Drainage / Sewerage</option>
-                  <option value="Lighting Issues">Lighting Issues</option>
-                  <option value="Electrical Fault">Electrical Fault</option>
-                  <option value="Power Backup">Power Backup</option>
-                  <option value="WiFi">Wi-Fi Connectivity</option>
-                  <option value="Network Cabling">Network / LAN Issue</option>
-                  <option value="HVAC">HVAC / Air Conditioning</option>
-                  <option value="Ventilation">Ventilation Issue</option>
-                  <option value="Lift">Lift / Elevator</option>
-                  <option value="Staircase">Staircase Maintenance</option>
-                  <option value="Doors">Doors / Windows</option>
-                  <option value="Furniture">Furniture Damage</option>
-                  <option value="Projector">Smart Classroom / Projector</option>
-                  <option value="Laboratory">Laboratory Equipment</option>
-                  <option value="Instrument">Instrument Calibration</option>
-                  <option value="Building">Building Damage</option>
-                  <option value="Ceiling">Ceiling Leakage / Damage</option>
-                  <option value="Flooring">Flooring / Tile Damage</option>
-                  <option value="Painting">Painting / Wall Issue</option>
-                  <option value="Washroom">Washroom Maintenance</option>
-                  <option value="Hostel">Hostel Maintenance</option>
-                  <option value="Mess">Mess / Canteen Issue</option>
-                  <option value="Library">Library Maintenance</option>
-                  <option value="Transport">University Transport</option>
-                  <option value="Parking">Parking Issues</option>
-                  <option value="Security">Security Concern</option>
-                  <option value="CCTV">CCTV Issue</option>
-                  <option value="Waste">Waste Management</option>
-                  <option value="Garden">Garden / Landscaping</option>
-                  <option value="Noise">Noise Complaint</option>
-                  <option value="Others">Others</option>
-                </select>
-              </div>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                  <select
+                    name="category"
+                    value={formData.category}
+                    onChange={handleChange}
+                    className="w-full sm:w-64 border border-gray-400 px-2 py-1 text-sm"
+                    required
+                  >
+                    <option value="">Select Category</option>
+                    <option value="Water Supply">Water Supply</option>
+                    <option value="Drainage">Drainage / Sewerage</option>
+                    <option value="Lighting Issues">Lighting Issues</option>
+                    <option value="Electrical Fault">Electrical Fault</option>
+                    <option value="Power Backup">Power Backup</option>
+                    <option value="WiFi">Wi-Fi Connectivity</option>
+                    <option value="Network Cabling">Network / LAN Issue</option>
+                    <option value="HVAC">HVAC / Air Conditioning</option>
+                    <option value="Ventilation">Ventilation Issue</option>
+                    <option value="Lift">Lift / Elevator</option>
+                    <option value="Staircase">Staircase Maintenance</option>
+                    <option value="Doors">Doors / Windows</option>
+                    <option value="Furniture">Furniture Damage</option>
+                    <option value="Projector">
+                      Smart Classroom / Projector
+                    </option>
+                    <option value="Laboratory">Laboratory Equipment</option>
+                    <option value="Instrument">Instrument Calibration</option>
+                    <option value="Building">Building Damage</option>
+                    <option value="Ceiling">Ceiling Leakage / Damage</option>
+                    <option value="Flooring">Flooring / Tile Damage</option>
+                    <option value="Painting">Painting / Wall Issue</option>
+                    <option value="Washroom">Washroom Maintenance</option>
+                    <option value="Hostel">Hostel Maintenance</option>
+                    <option value="Mess">Mess / Canteen Issue</option>
+                    <option value="Library">Library Maintenance</option>
+                    <option value="Transport">University Transport</option>
+                    <option value="Parking">Parking Issues</option>
+                    <option value="Security">Security Concern</option>
+                    <option value="CCTV">CCTV Issue</option>
+                    <option value="Waste">Waste Management</option>
+                    <option value="Garden">Garden / Landscaping</option>
+                    <option value="Noise">Noise Complaint</option>
+                    <option value="Others">Others</option>
+                  </select>
 
-              {/* Summary */}
-              <div className="bg-gray-100 px-4 py-3 font-medium md:border-r border-b border-gray-300">
-                Summary
-              </div>
-              <div className="md:col-span-3 px-4 py-3 border-b border-gray-300">
-                <input
-                  type="text"
-                  name="summary"
-                  value={formData.summary}
-                  onChange={handleChange}
-                  className="w-full border border-gray-400 px-2 py-1 text-sm"
-                  required
-                />
+                  <button
+                    type="button"
+                    onClick={generateWithAI}
+                    disabled={aiLoading}
+                    title="Generate with AI"
+                    className={`flex items-center gap-1 px-3 py-1 text-xs rounded transition ${
+                      aiLoading
+                        ? "bg-slate-400 text-white cursor-not-allowed"
+                        : "bg-yellow-400 text-black hover:bg-slate-800 cursor-pointer hover:text-white"
+                    }`}
+                  >
+                    {aiLoading ? (
+                      "Generating..."
+                    ) : (
+                      <>
+                        <WandSparkles size={20} />
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
 
               {/* Location */}
@@ -176,6 +230,21 @@ function RaiseComplaint() {
                   type="text"
                   name="location"
                   value={formData.location}
+                  onChange={handleChange}
+                  className="w-full border border-gray-400 px-2 py-1 text-sm"
+                  required
+                />
+              </div>
+
+              {/* Summary */}
+              <div className="bg-gray-100 px-4 py-3 font-medium md:border-r border-b border-gray-300">
+                Summary
+              </div>
+              <div className="md:col-span-3 px-4 py-3 border-b border-gray-300">
+                <input
+                  type="text"
+                  name="summary"
+                  value={formData.summary}
                   onChange={handleChange}
                   className="w-full border border-gray-400 px-2 py-1 text-sm"
                   required

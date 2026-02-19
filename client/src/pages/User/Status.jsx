@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { List } from "lucide-react";
+import { List,ClipboardCheck } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import UserSidebar from "../../components/UserSidebar";
 
@@ -17,7 +17,7 @@ function StatusTable({ title, data, navigate }) {
   return (
     <div className="bg-white border border-slate-500 rounded-sm mb-6">
       <div className="bg-slate-500 text-white px-4 py-2 font-medium flex items-center gap-2">
-        <List size={18} />
+        <ClipboardCheck size={20} />
         <span>{title}</span>
         <span className="ml-auto bg-white text-slate-600 text-xs px-2 rounded">
           {data.length}
