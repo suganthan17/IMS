@@ -3,6 +3,7 @@ import { List, Trash2 } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import AdminSidebar from "../../components/AdminSidebar";
 import { toast } from "react-toastify";
+import { sendEmail } from "../../utils/emailService.js";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -57,6 +58,8 @@ function AssignComplaints() {
       const data = await res.json();
 
       if (data.success) {
+        const updatedComplaint = complaints.find((c) => c._id === complaintId);
+
         setComplaints((prev) =>
           prev.map((c) =>
             c._id === complaintId
@@ -71,6 +74,27 @@ function AssignComplaints() {
         );
 
         toast.success("Updated successfully");
+
+        // Send email
+        if (staffId) {
+          const selectedStaff = staff.find((s) => s._id === staffId);
+
+          if (selectedStaff) {
+            try {
+              await sendEmail(
+                selectedStaff.email,
+                selectedStaff.name,
+                "New Complaint Assigned 🛠",
+                `A new complaint has been assigned to you.
+Issue: ${updatedComplaint?.summary}
+
+Please login to IMS dashboard to view full details.`,
+              );
+            } catch (emailError) {
+              console.error("Email failed:", emailError);
+            }
+          }
+        }
       } else {
         toast.error(data.message);
       }

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Eye, EyeOff } from "lucide-react";
+import { sendEmail } from "../../utils/emailService.js";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -45,6 +46,19 @@ function Login() {
 
       if (data.user && data.user._id) {
         localStorage.setItem("userId", data.user._id);
+      }
+
+      if (res.ok && data.token) {
+        try {
+          await sendEmail(
+            data.email || formData.email,
+            data.user?.name || "User",
+            "Login Alert",
+            "You have successfully logged into IMS.",
+          );
+        } catch (emailError) {
+          console.error("Email failed:", emailError);
+        }
       }
 
       toast.success("Login successful");

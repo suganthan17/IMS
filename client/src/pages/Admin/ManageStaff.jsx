@@ -3,6 +3,7 @@ import { List, Trash2 } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import AdminSidebar from "../../components/AdminSidebar";
 import { toast } from "react-toastify";
+import { sendEmail } from "../../utils/emailService.js";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -57,8 +58,30 @@ function ManageStaff() {
 
       if (data.success) {
         setStaff((prev) => [...prev, data.staff]);
+
+        try {
+          await sendEmail(
+            formData.email,
+            formData.name,
+            "Your IMS Staff Account Created 🛠",
+            `Hello ${formData.name},
+
+Your staff account has been created by Admin.
+
+Login Details:
+Email: ${formData.email}
+Password: ${formData.password}
+
+Login here: ${window.location.origin}
+
+Please login and change your password immediately.`,
+          );
+        } catch (emailError) {
+          console.error("Email failed:", emailError);
+        }
+
         setFormData({ name: "", email: "", password: "" });
-        toast.success("Staff added successfully");
+        toast.success("Staff added successfully & email sent");
       } else {
         toast.error(data.message);
       }
@@ -68,7 +91,6 @@ function ManageStaff() {
       setAdding(false);
     }
   };
-
   const handleDeleteStaff = async (id) => {
     if (!window.confirm("Delete this staff?")) return;
 

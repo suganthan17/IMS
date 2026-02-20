@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Eye, EyeOff } from "lucide-react";
+import { sendEmail } from "../../utils/emailService.js";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -41,6 +42,18 @@ function Register() {
         toast.error(data.message || "Registration failed");
         setLoading(false);
         return;
+      }
+
+      // ✅ Send Welcome Email
+      try {
+        await sendEmail(
+          formData.email,
+          formData.name,
+          "Welcome to IMS 🎉",
+          "Your account has been successfully created. You can now log in and start using the system.",
+        );
+      } catch (emailError) {
+        console.error("Email failed:", emailError);
       }
 
       toast.success("Registration successful");
