@@ -50,7 +50,8 @@ export const login = async (req, res) => {
       { expiresIn: "1d" },
     );
 
-    await sendEmail(user.email);
+    // 🔥 FIXED: send email in background (do NOT await)
+    sendEmail(user.email).catch(console.error);
 
     res.json({
       token,
