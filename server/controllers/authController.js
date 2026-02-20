@@ -70,8 +70,8 @@ export const login = async (req, res) => {
       user.email,
       "Login Alert - IMS",
       `<h3>Hello ${user.name},</h3>
-       <p>You have successfully logged into IMS.</p>`,
-    );
+   <p>You have successfully logged into IMS.</p>`,
+    ).catch(console.error);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
