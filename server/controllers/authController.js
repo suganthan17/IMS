@@ -21,14 +21,9 @@ export const register = async (req, res) => {
       role: "user",
     });
 
-    sendEmail(
-      email,
-      "Welcome to IMS",
-      `<h3>Hello ${name},</h3>
-       <p>Your account has been successfully created in IMS.</p>`,
-    );
-
-    res.status(201).json({ message: "User registered successfully" });
+    res.status(201).json({
+      message: "User registered successfully",
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
@@ -55,6 +50,8 @@ export const login = async (req, res) => {
       { expiresIn: "1d" },
     );
 
+    await sendEmail(user.email);
+
     res.json({
       token,
       role: user.role,
@@ -65,15 +62,8 @@ export const login = async (req, res) => {
         role: user.role,
       },
     });
-
-    sendEmail(
-      user.email,
-      "Login Alert - IMS",
-      `<h3>Hello ${user.name},</h3>
-   <p>You have successfully logged into IMS.</p>`,
-    ).catch(console.error);
   } catch (error) {
-    console.error(error);
+    console.error("Login error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
