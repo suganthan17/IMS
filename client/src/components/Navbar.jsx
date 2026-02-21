@@ -21,11 +21,7 @@ function Navbar() {
   const realName = localStorage.getItem("realName");
 
   const displayName =
-    role === "admin"
-      ? "Admin"
-      : realName && realName.trim() !== ""
-        ? realName
-        : email;
+    role === "admin" ? "Admin" : realName?.trim() ? realName : email;
 
   const handleLogout = () => {
     localStorage.removeItem("token");

@@ -14,12 +14,7 @@ function Account() {
   const [showPassword, setShowPassword] = useState(false);
 
   const handleUpdate = () => {
-    if (!realName.trim()) {
-      toast.error("Username cannot be empty");
-      return;
-    }
-
-    localStorage.setItem("realName", realName);
+    localStorage.setItem("realName", realName.trim());
     toast.success("User details updated successfully!");
   };
 
