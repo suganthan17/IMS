@@ -29,6 +29,9 @@ import StaffDashboard from "./pages/Staff/StaffDashboard";
 import AssignedComplaints from "./pages/Staff/AssignedComplaints";
 import AssignedComplaintDetails from "./pages/Staff/AssignedComplaintsDetail";
 
+/*Support*/
+import Support from "./components/Support";
+
 /* Protected Route */
 const ProtectedRoute = ({ children, role }) => {
   const token = localStorage.getItem("token");
@@ -159,6 +162,14 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/support"
+          element={
+            <ProtectedRoute>
+              <Support />
+            </ProtectedRoute>
+          }
+        ></Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

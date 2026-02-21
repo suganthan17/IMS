@@ -109,7 +109,10 @@ function Navbar() {
                   </li>
                 )}
 
-                <li className="flex items-center gap-2 px-4 py-2 hover:bg-yellow-400 border-b border-gray-200 cursor-pointer">
+                <li
+                  onClick={() => navigate("/support")}
+                  className="flex items-center gap-2 px-4 py-2 hover:bg-yellow-400 border-b border-gray-200 cursor-pointer"
+                >
                   <Phone size={16} />
                   Support
                 </li>
