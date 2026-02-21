@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { List,ClipboardCheck } from "lucide-react";
+import { ClipboardCheck, ClipboardX } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import UserSidebar from "../../components/UserSidebar";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-function StatusTable({ title, data, navigate }) {
+function StatusTable({ title, data, navigate, type }) {
   const statusBadge = (status) => {
     if (status === "Resolved") return "bg-green-200 text-green-800";
     if (status === "In Progress") return "bg-yellow-200 text-yellow-800";
@@ -17,7 +17,11 @@ function StatusTable({ title, data, navigate }) {
   return (
     <div className="bg-white border border-slate-500 rounded-sm mb-6">
       <div className="bg-slate-500 text-white px-4 py-2 font-medium flex items-center gap-2">
-        <ClipboardCheck size={20} />
+        {type === "pending" ? (
+          <ClipboardX size={20} />
+        ) : (
+          <ClipboardCheck size={20} />
+        )}
         <span>{title}</span>
         <span className="ml-auto bg-white text-slate-600 text-xs px-2 rounded">
           {data.length}
@@ -145,12 +149,14 @@ function Status() {
               title="Pending & In Progress Issues"
               data={pendingIssues}
               navigate={navigate}
+              type="pending"
             />
 
             <StatusTable
               title="Resolved Issues"
               data={resolvedIssues}
               navigate={navigate}
+              type="resolved"
             />
           </>
         )}

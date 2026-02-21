@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { List, Trash2 } from "lucide-react";
+import { List, Trash2, UserPlus } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import AdminSidebar from "../../components/AdminSidebar";
 import { toast } from "react-toastify";
@@ -127,11 +127,11 @@ Please login and change your password immediately.`,
 
         <div className="bg-white border border-slate-500 rounded-sm mb-6">
           <div className="bg-slate-500 text-white px-4 py-2 font-medium flex items-center gap-2">
-            <List size={18} />
+            <UserPlus size={20} />
             <span>Manage Maintenance Staff</span>
             <span className="ml-auto bg-white text-slate-600 text-xs px-2 rounded">
               {staff.length}
-            </span>
+            </span> 
           </div>
 
           <div className="p-4 sm:p-6 border-b border-gray-300">
@@ -269,14 +269,14 @@ Please login and change your password immediately.`,
                       <td className="border border-gray-300 px-4 py-3">
                         {s.email}
                       </td>
-                      <td className="border border-gray-300 px-4 py-3">
+                      <td className="border  border-gray-300 px-4 py-3">
                         <button
                           disabled={deletingId === s._id}
                           onClick={() => handleDeleteStaff(s._id)}
                           className={`${
                             deletingId === s._id
                               ? "text-gray-400 cursor-not-allowed"
-                              : "text-red-600 hover:text-red-700 cursor-pointer"
+                              : "text-red-600 hover:text-red-700 flex ml-3 cursor-pointer"
                           }`}
                         >
                           {deletingId === s._id ? (

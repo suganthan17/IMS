@@ -56,7 +56,10 @@ function StaffDashboard() {
         <h1 className="text-xl font-bold mb-6">Maintenance Dashboard</h1>
 
         <div className="flex flex-wrap gap-4">
-          <div className="w-full sm:w-[48%] lg:w-[23%] bg-white border border-gray-300 rounded p-4 cursor-pointer hover:bg-gray-50 flex justify-between items-center">
+          <div
+            onClick={() => navigate("/staff/assigned-complaints")}
+            className="w-full sm:w-[48%] lg:w-[23%] bg-white border border-gray-300 rounded p-4 cursor-pointer hover:bg-gray-50 flex justify-between items-center"
+          >
             <div>
               <p className="text-sm text-gray-600">Total Assigned</p>
               <p className="text-2xl font-bold">{totalAssigned}</p>
@@ -65,7 +68,7 @@ function StaffDashboard() {
           </div>
 
           <div
-            onClick={() => navigate("/staff/my-complaints")}
+            onClick={() => navigate("/staff/assigned-complaints")}
             className="w-full sm:w-[48%] lg:w-[23%] bg-white border border-gray-300 rounded p-4 cursor-pointer hover:bg-gray-50 flex justify-between items-center"
           >
             <div>
