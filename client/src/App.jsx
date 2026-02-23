@@ -15,7 +15,6 @@ import ComplaintDetails from "./pages/User/MyComplaintsDetails";
 import Account from "./pages/User/Account";
 
 /* Auth Pages */
-import Register from "./pages/auth/Register";
 import Login from "./pages/auth/Login";
 
 /* Admin Pages */
@@ -49,7 +48,6 @@ function App() {
       <Routes>
         {/* AUTH ROUTES */}
         <Route path="/" element={<Login />} />
-        <Route path="/register" element={<Register />} />
 
         {/* USER ROUTES */}
         <Route
