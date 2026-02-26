@@ -70,12 +70,11 @@ function AssignComplaints() {
                     : null,
                 }
               : c,
-          ),
+          )
         );
 
         toast.success("Updated successfully");
 
-        // Send email
         if (staffId) {
           const selectedStaff = staff.find((s) => s._id === staffId);
 
@@ -88,7 +87,7 @@ function AssignComplaints() {
                 `A new complaint has been assigned to you.
 Issue: ${updatedComplaint?.summary}
 
-Please login to IMS dashboard to view full details.`,
+Please login to IMS dashboard to view full details.`
               );
             } catch (emailError) {
               console.error("Email failed:", emailError);
@@ -111,7 +110,7 @@ Please login to IMS dashboard to view full details.`,
       <AdminSidebar />
 
       <div className="mt-14 p-4 sm:p-6 min-h-screen bg-gray-100 md:ml-56">
-        <h1 className="text-xl font-bold mb-4">Assign Complaints to Staff</h1>
+        <h1 className="text-xl font-bold mb-4">Assign Complaints</h1>
 
         {loading ? (
           <div className="flex justify-center py-12">
@@ -139,7 +138,10 @@ Please login to IMS dashboard to view full details.`,
           <div className="bg-white border border-slate-500 rounded-sm">
             <div className="bg-slate-500 text-white px-4 py-3 font-medium flex items-center gap-2">
               <List size={18} />
-              Assign Complaints
+              <span>Assign Complaints</span>
+              <span className="ml-auto bg-white text-slate-600 text-xs px-2 py-1 rounded">
+                {complaints.length}
+              </span>
             </div>
 
             <div className="overflow-x-auto">
@@ -210,7 +212,9 @@ Please login to IMS dashboard to view full details.`,
                                 ? "bg-gray-200 cursor-not-allowed"
                                 : "cursor-pointer"
                             }`}
-                            onChange={(e) => assignStaff(c._id, e.target.value)}
+                            onChange={(e) =>
+                              assignStaff(c._id, e.target.value)
+                            }
                           >
                             <option value="">Select staff</option>
                             {staff.map((s) => (
@@ -226,11 +230,13 @@ Please login to IMS dashboard to view full details.`,
                         {c.assignedTo && (
                           <button
                             disabled={
-                              processingId === c._id || c.status === "Resolved"
+                              processingId === c._id ||
+                              c.status === "Resolved"
                             }
                             onClick={() => assignStaff(c._id, null)}
                             className={`${
-                              processingId === c._id || c.status === "Resolved"
+                              processingId === c._id ||
+                              c.status === "Resolved"
                                 ? "text-gray-400 cursor-not-allowed"
                                 : "text-red-600 hover:text-red-700 cursor-pointer"
                             }`}

@@ -32,7 +32,7 @@ function AdminSidebar() {
               className={({ isActive }) =>
                 `flex items-center gap-2 px-4 py-3 text-sm whitespace-nowrap transition-colors ${
                   isActive
-                    ? "bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200 text-blue-800 font-semibold"
+                    ? "bg-gradient-to-r from-slate-200 via-slate-300 to-slate-00 text-blue-800 font-semibold"
                     : "text-gray-700 hover:bg-gray-200"
                 }`
               }
@@ -64,7 +64,7 @@ function AdminSidebar() {
                 className={({ isActive }) =>
                   `flex items-center gap-3 px-5 py-4 text-sm transition-colors ${
                     isActive
-                      ? "bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200 text-blue-800 font-semibold"
+                      ? "bg-gradient-to-r from-slate-300 via-slate-300 to-slate-200 text-blue-800 font-semibold"
                       : "text-gray-700 hover:bg-gray-200"
                   }`
                 }
