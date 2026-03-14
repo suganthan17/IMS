@@ -8,10 +8,8 @@ function Account() {
   const email = localStorage.getItem("email");
   const role = localStorage.getItem("role");
   const savedName = localStorage.getItem("realName") || "";
-  const savedPassword = localStorage.getItem("password") || "";
 
   const [realName, setRealName] = useState(savedName);
-  const [showPassword, setShowPassword] = useState(false);
 
   const handleUpdate = () => {
     localStorage.setItem("realName", realName.trim());
@@ -42,29 +40,6 @@ function Account() {
                   E-mail
                 </td>
                 <td className="px-4 py-3 break-all">{email}</td>
-              </tr>
-
-              {/* Password */}
-              <tr className="flex flex-col md:table-row">
-                <td className="bg-gray-100 px-4 py-3 font-medium md:border-r border-gray-300">
-                  Password
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-3 flex-wrap">
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      value={savedPassword}
-                      readOnly
-                      className="w-full md:w-64 border border-gray-300 px-2 py-1 text-sm bg-gray-50 rounded"
-                    />
-                    <button
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="text-slate-600 cursor-pointer hover:text-slate-800 transition"
-                    >
-                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                    </button>
-                  </div>
-                </td>
               </tr>
 
               {/* Username */}

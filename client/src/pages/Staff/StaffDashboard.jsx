@@ -9,6 +9,7 @@ function StaffDashboard() {
 
   const [totalAssigned, setTotalAssigned] = useState(0);
   const [resolved, setResolved] = useState(0);
+  const [pending, setPending] = useState(0);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -28,11 +29,15 @@ function StaffDashboard() {
             (c) => c.assignedTo && c.assignedTo._id === staffId,
           );
 
-          setTotalAssigned(myComplaints.length);
+          const total = myComplaints.length;
 
-          setResolved(
-            myComplaints.filter((c) => c.status === "Resolved").length,
-          );
+          const resolvedCount = myComplaints.filter(
+            (c) => c.status === "Resolved",
+          ).length;
+
+          setTotalAssigned(total);
+          setResolved(resolvedCount);
+          setPending(total - resolvedCount);
         }
       })
       .catch((err) => console.error(err));
@@ -54,7 +59,9 @@ function StaffDashboard() {
           >
             <div>
               <p className="text-sm text-gray-600">Total Assigned</p>
-              <p className="text-2xl font-bold">{totalAssigned}</p>
+              <p className="text-2xl font-bold text-black">
+                {totalAssigned}
+              </p>
             </div>
             <ArrowUpRight size={18} className="text-gray-500" />
           </div>
@@ -67,6 +74,18 @@ function StaffDashboard() {
             <div>
               <p className="text-sm text-gray-600">Resolved</p>
               <p className="text-2xl font-bold text-black">{resolved}</p>
+            </div>
+            <ArrowUpRight size={18} className="text-gray-500" />
+          </div>
+
+          {/* Pending */}
+          <div
+            onClick={() => navigate("/staff/my-complaints")}
+            className="w-full sm:w-[48%] lg:w-[23%] bg-white border border-gray-300 rounded p-4 cursor-pointer hover:bg-gray-50 flex justify-between items-center"
+          >
+            <div>
+              <p className="text-sm text-gray-600">Pending</p>
+              <p className="text-2xl font-bold text-black">{pending}</p>
             </div>
             <ArrowUpRight size={18} className="text-gray-500" />
           </div>

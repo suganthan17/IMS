@@ -4,6 +4,7 @@ import {
   Routes,
   Route,
   Navigate,
+  useLocation,
 } from "react-router-dom";
 
 /* User Pages */
@@ -28,8 +29,11 @@ import StaffDashboard from "./pages/Staff/StaffDashboard";
 import AssignedComplaints from "./pages/Staff/AssignedComplaints";
 import AssignedComplaintDetails from "./pages/Staff/AssignedComplaintsDetail";
 
-/*Support*/
+/* Support */
 import Support from "./components/Support";
+
+/* Scroll Button */
+import ScrollToTopButton from "./components/ScrollToTopButton";
 
 /* Protected Route */
 const ProtectedRoute = ({ children, role }) => {
@@ -42,9 +46,12 @@ const ProtectedRoute = ({ children, role }) => {
   return children;
 };
 
-function App() {
+/* Wrapper to access location */
+function AppRoutes() {
+  const location = useLocation();
+
   return (
-    <Router>
+    <>
       <Routes>
         {/* AUTH ROUTES */}
         <Route path="/" element={<Login />} />
@@ -90,7 +97,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/user/account"
           element={
@@ -151,7 +157,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/staff/complaints/:id"
           element={
@@ -160,6 +165,8 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        {/* SUPPORT */}
         <Route
           path="/support"
           element={
@@ -167,10 +174,21 @@ function App() {
               <Support />
             </ProtectedRoute>
           }
-        ></Route>
+        />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+
+      {/* Show button except on login page */}
+      {location.pathname !== "/" && <ScrollToTopButton />}
+    </>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <AppRoutes />
     </Router>
   );
 }

@@ -162,40 +162,67 @@ function RaiseComplaint() {
                     className="w-full sm:w-64 border border-gray-400 px-2 py-1 text-sm"
                     required
                   >
-                    <option value="">Select Category</option>
                     <option value="Water Supply">Water Supply</option>
                     <option value="Drainage">Drainage / Sewerage</option>
                     <option value="Lighting Issues">Lighting Issues</option>
                     <option value="Electrical Fault">Electrical Fault</option>
                     <option value="Power Backup">Power Backup</option>
+
                     <option value="WiFi">Wi-Fi Connectivity</option>
                     <option value="Network Cabling">Network / LAN Issue</option>
+                    <option value="Server">Server / IT Infrastructure</option>
+                    <option value="Printer">Printer / Scanner Issue</option>
+                    <option value="Smart Board">
+                      Smart Board / Digital Board
+                    </option>
+
                     <option value="HVAC">HVAC / Air Conditioning</option>
                     <option value="Ventilation">Ventilation Issue</option>
                     <option value="Lift">Lift / Elevator</option>
                     <option value="Staircase">Staircase Maintenance</option>
                     <option value="Doors">Doors / Windows</option>
                     <option value="Furniture">Furniture Damage</option>
+
                     <option value="Projector">
                       Smart Classroom / Projector
                     </option>
                     <option value="Laboratory">Laboratory Equipment</option>
                     <option value="Instrument">Instrument Calibration</option>
+                    <option value="Computer Lab">Computer Lab Systems</option>
+
                     <option value="Building">Building Damage</option>
                     <option value="Ceiling">Ceiling Leakage / Damage</option>
+                    <option value="Roof">Roof Leakage</option>
                     <option value="Flooring">Flooring / Tile Damage</option>
                     <option value="Painting">Painting / Wall Issue</option>
+
                     <option value="Washroom">Washroom Maintenance</option>
+                    <option value="Water Cooler">
+                      Water Cooler / Drinking Water
+                    </option>
                     <option value="Hostel">Hostel Maintenance</option>
                     <option value="Mess">Mess / Canteen Issue</option>
+
                     <option value="Library">Library Maintenance</option>
                     <option value="Transport">University Transport</option>
                     <option value="Parking">Parking Issues</option>
+
                     <option value="Security">Security Concern</option>
                     <option value="CCTV">CCTV Issue</option>
+                    <option value="Fire Safety">Fire Safety Equipment</option>
+                    <option value="Emergency Exit">
+                      Emergency Exit Blocked
+                    </option>
+
                     <option value="Waste">Waste Management</option>
                     <option value="Garden">Garden / Landscaping</option>
+                    <option value="Road">Internal Roads / Pathways</option>
+                    <option value="Street Light">Street Light Issue</option>
+
+                    <option value="Animal">Stray Animals</option>
                     <option value="Noise">Noise Complaint</option>
+                    <option value="Cleanliness">Cleanliness Issue</option>
+
                     <option value="Others">Others</option>
                   </select>
 
