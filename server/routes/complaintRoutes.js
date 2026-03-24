@@ -4,6 +4,7 @@ import {
   getAllComplaints,
   getComplaintById,
   updateComplaintStatus,
+  deleteComplaint
 } from "../controllers/complaintController.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 import upload from "../middleware/upload.js";
@@ -22,5 +23,7 @@ router.put(
   upload.single("image"),
   updateComplaintStatus,
 );
+router.delete("/:id", authMiddleware, deleteComplaint);
+
 
 export default router;

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Navbar from "../../components/Navbar";
 import UserSidebar from "../../components/UserSidebar";
 import { useNavigate } from "react-router-dom";
-import { Info } from "lucide-react";
+import { Info, Trash2 } from "lucide-react";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -11,6 +11,7 @@ function MyComplaints() {
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeId, setActiveId] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -36,6 +37,31 @@ function MyComplaints() {
       return "bg-blue-100 text-blue-700 border-blue-300";
 
     return "bg-orange-100 text-orange-700 border-orange-300";
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this complaint?"))
+      return;
+
+    setDeletingId(id);
+    const token = localStorage.getItem("token");
+
+    try {
+      const res = await fetch(`${API_URL}/api/complaints/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (data.success) {
+        setComplaints((prev) => prev.filter((c) => c._id !== id));
+      } else {
+        alert(data.message);
+      }
+    } catch {
+      alert("Failed to delete complaint");
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   return (
@@ -90,7 +116,7 @@ function MyComplaints() {
 
                   <span
                     className={`text-xs px-3 py-1 rounded-full border font-medium ${statusStyle(
-                      c.status,
+                      c.status
                     )}`}
                   >
                     {c.status}
@@ -117,42 +143,83 @@ function MyComplaints() {
                   </div>
                 </div>
 
-                <button
-                  onClick={() => {
-                    setActiveId(c._id);
-                    navigate(`/user/complaints/${c._id}`);
-                  }}
-                  disabled={activeId === c._id}
-                  className={`mt-4 w-full rounded-lg py-2 text-sm font-medium transition flex items-center justify-center gap-2 ${
-                    activeId === c._id
-                      ? "bg-slate-400 text-white cursor-not-allowed"
-                      : "border border-gray-300 text-slate-700 hover:bg-slate-600 hover:text-white cursor-pointer"
-                  }`}
-                >
-                  {activeId === c._id ? (
-                    <>
-                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                          fill="none"
-                        />
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8v8H4z"
-                        />
-                      </svg>
-                      Loading...
-                    </>
-                  ) : (
-                    "View Details"
+                <div className="mt-4 flex gap-2">
+                  <button
+                    onClick={() => {
+                      setActiveId(c._id);
+                      navigate(`/user/complaints/${c._id}`);
+                    }}
+                    disabled={activeId === c._id}
+                    className={`flex-1 rounded-lg py-2 text-sm font-medium transition flex items-center justify-center gap-2 ${
+                      activeId === c._id
+                        ? "bg-slate-400 text-white cursor-not-allowed"
+                        : "border border-gray-300 text-slate-700 hover:bg-slate-600 hover:text-white cursor-pointer"
+                    }`}
+                  >
+                    {activeId === c._id ? (
+                      <>
+                        <svg
+                          className="animate-spin h-4 w-4"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                            fill="none"
+                          />
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8v8H4z"
+                          />
+                        </svg>
+                        Loading...
+                      </>
+                    ) : (
+                      "View Details"
+                    )}
+                  </button>
+
+                  {c.status !== "Resolved" && (
+                    <button
+                      onClick={() => handleDelete(c._id)}
+                      disabled={deletingId === c._id}
+                      className={`rounded-lg px-4 py-2 text-sm font-medium transition flex items-center justify-center gap-2 ${
+                        deletingId === c._id
+                          ? "bg-slate-400 text-white cursor-not-allowed"
+                          : "border border-red-300 text-red-600 hover:bg-red-600 hover:text-white cursor-pointer"
+                      }`}
+                    >
+                      {deletingId === c._id ? (
+                        <svg
+                          className="animate-spin h-4 w-4"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                            fill="none"
+                          />
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8v8H4z"
+                          />
+                        </svg>
+                      ) : (
+                        <Trash2 size={16} />
+                      )}
+                    </button>
                   )}
-                </button>
+                </div>
               </div>
             ))}
           </div>

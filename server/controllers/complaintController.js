@@ -161,3 +161,45 @@ export const updateComplaintStatus = async (req, res) => {
     });
   }
 };
+
+export const deleteComplaint = async (req, res) => {
+  try {
+    const complaint = await Complaint.findById(req.params.id);
+
+    if (!complaint) {
+      return res.status(404).json({
+        success: false,
+        message: "Complaint not found",
+      });
+    }
+
+    const isAdmin = req.user.role === "admin";
+    const isOwner = complaint.userId.toString() === req.user._id.toString();
+
+    if (!isAdmin && !isOwner) {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied",
+      });
+    }
+
+    if (!isAdmin && complaint.status === "Resolved") {
+      return res.status(400).json({
+        success: false,
+        message: "Resolved complaints cannot be deleted",
+      });
+    }
+
+    await complaint.deleteOne();
+
+    res.status(200).json({
+      success: true,
+      message: "Complaint deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
