@@ -1,41 +1,40 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Eye, EyeOff } from "lucide-react";
 import { GoogleLogin } from "@react-oauth/google";
 import { sendEmail } from "../../utils/emailService.js";
+import Lottie from "lottie-react";
+import gearAnimation from "../../assets/gear-loader.json";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 function Login() {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isAppLoading, setIsAppLoading] = useState(true);
 
   const navigate = useNavigate();
-
   const currentRole = localStorage.getItem("role");
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  useEffect(() => {
+    const timer = setTimeout(() => setIsAppLoading(false), 3000);
+    return () => clearTimeout(timer);
+  }, []);
 
-  // 🔹 Normal Email Login
+  const handleChange = (e) =>
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
     try {
       const res = await fetch(`${API_URL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-
       const data = await res.json();
 
       if (!res.ok) {
@@ -48,33 +47,24 @@ function Login() {
       localStorage.setItem("role", data.role);
       localStorage.setItem("email", data.email || formData.email);
       localStorage.setItem("password", formData.password);
+      if (data.user?._id) localStorage.setItem("userId", data.user._id);
 
-      if (data.user && data.user._id) {
-        localStorage.setItem("userId", data.user._id);
-      }
-
-      if (res.ok && data.token) {
-        try {
-          await sendEmail(
-            data.email || formData.email,
-            data.user?.name || "User",
-            "Login Alert",
-            "You have successfully logged into IMS.",
-          );
-        } catch (emailError) {
-          console.error("Email failed:", emailError);
-        }
+      try {
+        await sendEmail(
+          data.email || formData.email,
+          data.user?.name || "User",
+          "Login Alert",
+          "You have successfully logged into IMS."
+        );
+      } catch (emailError) {
+        console.error("Email failed:", emailError);
       }
 
       toast.success("Login successful");
 
-      if (data.role === "admin") {
-        navigate("/admin/dashboard", { replace: true });
-      } else if (data.role === "maintenance") {
-        navigate("/staff/dashboard", { replace: true });
-      } else {
-        navigate("/user/dashboard", { replace: true });
-      }
+      if (data.role === "admin") navigate("/admin/dashboard", { replace: true });
+      else if (data.role === "maintenance") navigate("/staff/dashboard", { replace: true });
+      else navigate("/user/dashboard", { replace: true });
     } catch (err) {
       console.error("Login error:", err);
       toast.error("Server error. Please try again later.");
@@ -83,7 +73,6 @@ function Login() {
     }
   };
 
-  // 🔹 Google Login
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
       const res = await fetch(`${API_URL}/api/auth/google`, {
@@ -91,36 +80,46 @@ function Login() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token: credentialResponse.credential }),
       });
-
       const data = await res.json();
 
-      if (!res.ok) {
-        toast.error("Google login failed");
-        return;
-      }
+      if (!res.ok) { toast.error("Google login failed"); return; }
 
       localStorage.setItem("token", data.accessToken);
       localStorage.setItem("role", data.user.role);
       localStorage.setItem("email", data.user.email);
-
-      if (data.user && data.user._id) {
-        localStorage.setItem("userId", data.user._id);
-      }
+      if (data.user?._id) localStorage.setItem("userId", data.user._id);
 
       toast.success("Google login successful");
 
-      if (data.user.role === "admin") {
-        navigate("/admin/dashboard", { replace: true });
-      } else if (data.user.role === "maintenance") {
-        navigate("/staff/dashboard", { replace: true });
-      } else {
-        navigate("/user/dashboard", { replace: true });
-      }
+      if (data.user.role === "admin") navigate("/admin/dashboard", { replace: true });
+      else if (data.user.role === "maintenance") navigate("/staff/dashboard", { replace: true });
+      else navigate("/user/dashboard", { replace: true });
     } catch (err) {
       console.error("Google login error:", err);
       toast.error("Google authentication failed");
     }
   };
+
+  if (isAppLoading) {
+    return (
+      <div
+        style={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "#ffffff",
+        }}
+      >
+        <Lottie
+          animationData={gearAnimation}
+          loop
+          autoplay
+          style={{ width: 200, height: 200 }}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white">
@@ -179,24 +178,9 @@ function Login() {
           >
             {loading ? (
               <span className="flex items-center justify-center gap-2">
-                <svg
-                  className="animate-spin h-4 w-4 text-white"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                    fill="none"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8v8H4z"
-                  />
+                <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
                 </svg>
                 Signing in...
               </span>
@@ -206,24 +190,19 @@ function Login() {
           </button>
         </form>
 
-        {/* Divider */}
         <div className="flex items-center my-5">
           <div className="flex-grow border-t"></div>
           <span className="mx-3 text-sm text-gray-400">OR</span>
           <div className="flex-grow border-t"></div>
         </div>
 
-        {(!currentRole ||
-          currentRole === "user" ||
-          currentRole === "admin") && (
-          <>
-            <div className="flex justify-center">
-              <GoogleLogin
-                onSuccess={handleGoogleSuccess}
-                onError={() => toast.error("Google Login Failed")}
-              />
-            </div>
-          </>
+        {(!currentRole || currentRole === "user" || currentRole === "admin") && (
+          <div className="flex justify-center">
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => toast.error("Google Login Failed")}
+            />
+          </div>
         )}
       </div>
     </div>
