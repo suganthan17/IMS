@@ -4,6 +4,8 @@ import { ArrowUpRight } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import StaffSidebar from "../../components/StaffSidebar";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 function StaffDashboard() {
   const navigate = useNavigate();
 
@@ -15,7 +17,7 @@ function StaffDashboard() {
     const token = localStorage.getItem("token");
     const staffId = localStorage.getItem("userId");
 
-    fetch("http://localhost:5000/api/complaints", {
+    fetch(`${API_URL}/api/complaints`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -25,14 +27,21 @@ function StaffDashboard() {
         if (data.success) {
           const complaints = data.complaints;
 
-          const myComplaints = complaints.filter(
-            (c) => c.assignedTo && c.assignedTo._id === staffId,
-          );
+          const myComplaints = complaints.filter((c) => {
+            if (!c.assignedTo) return false;
+
+            const assignedId =
+              typeof c.assignedTo === "object"
+                ? c.assignedTo._id
+                : c.assignedTo;
+
+            return assignedId?.toString() === staffId;
+          });
 
           const total = myComplaints.length;
 
           const resolvedCount = myComplaints.filter(
-            (c) => c.status === "Resolved",
+            (c) => c.status === "Resolved"
           ).length;
 
           setTotalAssigned(total);
@@ -52,7 +61,6 @@ function StaffDashboard() {
         <h1 className="text-xl font-bold mb-6">Maintenance Dashboard</h1>
 
         <div className="flex flex-wrap gap-4">
-          {/* Total Assigned */}
           <div
             onClick={() => navigate("/staff/my-complaints")}
             className="w-full sm:w-[48%] lg:w-[23%] bg-white border border-gray-300 rounded p-4 cursor-pointer hover:bg-gray-50 flex justify-between items-center"
@@ -66,7 +74,6 @@ function StaffDashboard() {
             <ArrowUpRight size={18} className="text-gray-500" />
           </div>
 
-          {/* Resolved */}
           <div
             onClick={() => navigate("/staff/my-complaints")}
             className="w-full sm:w-[48%] lg:w-[23%] bg-white border border-gray-300 rounded p-4 cursor-pointer hover:bg-gray-50 flex justify-between items-center"
@@ -78,7 +85,6 @@ function StaffDashboard() {
             <ArrowUpRight size={18} className="text-gray-500" />
           </div>
 
-          {/* Pending */}
           <div
             onClick={() => navigate("/staff/my-complaints")}
             className="w-full sm:w-[48%] lg:w-[23%] bg-white border border-gray-300 rounded p-4 cursor-pointer hover:bg-gray-50 flex justify-between items-center"
