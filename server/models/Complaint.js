@@ -3,6 +3,18 @@ import mongoose from "mongoose";
 const complaintSchema = new mongoose.Schema(
   {
     category: { type: String, required: true },
+
+    aiCategory: {
+      type: String,
+      default: "",
+    },
+
+    priority: {
+      type: String,
+      enum: ["Low", "Medium", "High", "Critical"],
+      default: "Medium",
+    },
+
     summary: { type: String, required: true },
     location: { type: String, required: true },
     description: { type: String, required: true },
@@ -23,15 +35,11 @@ const complaintSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
-    beforeImage: {
-      type: String,
-    },
 
-    afterImage: {
-      type: String,
-    },
+    beforeImage: String,
+    afterImage: String,
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 export default mongoose.model("Complaint", complaintSchema);

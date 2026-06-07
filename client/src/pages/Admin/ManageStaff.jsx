@@ -17,6 +17,7 @@ function ManageStaff() {
     name: "",
     email: "",
     password: "",
+    expertise: "",
   });
 
   const token = localStorage.getItem("token");
@@ -80,7 +81,7 @@ Please login and change your password immediately.`,
           console.error("Email failed:", emailError);
         }
 
-        setFormData({ name: "", email: "", password: "" });
+        setFormData({ name: "", email: "", password: "", expertise: "" });
         toast.success("Staff added successfully & email sent");
       } else {
         toast.error(data.message);
@@ -131,7 +132,7 @@ Please login and change your password immediately.`,
             <span>Manage Maintenance Staff</span>
             <span className="ml-auto bg-white text-slate-600 text-xs px-2 rounded">
               {staff.length}
-            </span> 
+            </span>
           </div>
 
           <div className="p-4 sm:p-6 border-b border-gray-300">
@@ -180,6 +181,32 @@ Please login and change your password immediately.`,
                 className="border border-gray-300 px-3 py-2 rounded w-full"
                 required
               />
+              <select
+                value={formData.expertise}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    expertise: e.target.value,
+                  })
+                }
+                className="border border-gray-300 px-3 py-2 rounded w-full"
+                required
+              >
+                <option value="">Select Expertise</option>
+                <option value="Electrical">Electrical</option>
+                <option value="IT & Network">IT & Network</option>
+                <option value="Civil & Building">Civil & Building</option>
+                <option value="Water & Sanitation">Water & Sanitation</option>
+                <option value="HVAC & Utilities">HVAC & Utilities</option>
+                <option value="Laboratory & Equipment">
+                  Laboratory & Equipment
+                </option>
+                <option value="Campus Facilities">Campus Facilities</option>
+                <option value="Safety & Environment">
+                  Safety & Environment
+                </option>
+                <option value="Others">Others</option>
+              </select>
 
               <div className="col-span-1 sm:col-span-2 lg:col-span-3 flex justify-end">
                 <button

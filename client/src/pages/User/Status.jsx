@@ -6,6 +6,48 @@ import UserSidebar from "../../components/UserSidebar";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
+const PriorityBadge = ({ priority }) => {
+  const config = {
+    Critical: {
+      bar: "bg-red-500",
+      text: "text-red-700",
+      bg: "bg-red-50 border-red-300",
+      pulse: "animate-pulse",
+    },
+    High: {
+      bar: "bg-orange-400",
+      text: "text-orange-700",
+      bg: "bg-orange-50 border-orange-300",
+      pulse: "",
+    },
+    Medium: {
+      bar: "bg-yellow-400",
+      text: "text-yellow-700",
+      bg: "bg-yellow-50 border-yellow-300",
+      pulse: "",
+    },
+    Low: {
+      bar: "bg-green-400",
+      text: "text-green-700",
+      bg: "bg-green-50 border-green-300",
+      pulse: "",
+    },
+  };
+
+  const c = config[priority] || config["Low"];
+
+  return (
+    <div
+      className={`inline-flex items-center gap-1.5 px-2 py-1 rounded border ${c.bg} ${c.text}`}
+    >
+      <span
+        className={`w-2 h-2 rounded-full ${c.bar} ${c.pulse} inline-block`}
+      />
+      <span className="text-xs font-semibold tracking-wide">{priority}</span>
+    </div>
+  );
+};
+
 function StatusTable({ title, data, navigate, type }) {
   const statusBadge = (status) => {
     if (status === "Resolved") return "bg-green-200 text-green-800";
@@ -48,45 +90,41 @@ function StatusTable({ title, data, navigate, type }) {
                   Status
                 </th>
                 <th className="border border-gray-300 px-3 py-2 text-center">
+                  Priority
+                </th>
+                <th className="border border-gray-300 px-3 py-2 text-center">
                   Updated
                 </th>
               </tr>
             </thead>
-
             <tbody>
               {data.map((c, index) => {
                 const displayStatus = c.assignedTo ? c.status : "Pending";
-
                 return (
                   <tr
                     key={c._id}
                     onClick={() => navigate(`/user/complaints/${c._id}`)}
-                    className={`cursor-pointer ${
-                      index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                    } hover:bg-slate-100`}
+                    className={`cursor-pointer ${index % 2 === 0 ? "bg-white" : "bg-gray-50"} hover:bg-slate-100`}
                   >
                     <td className="border border-gray-300 px-3 py-2">
                       {c.category}
                     </td>
-
                     <td className="border border-gray-300 px-3 py-2 font-medium text-slate-700">
                       {c.summary}
                     </td>
-
                     <td className="border border-gray-300 px-3 py-2">
                       {c.location}
                     </td>
-
                     <td className="border border-gray-300 px-3 py-2 text-center">
                       <span
-                        className={`px-2 py-1 rounded text-xs font-medium ${statusBadge(
-                          displayStatus,
-                        )}`}
+                        className={`px-2 py-1 rounded text-xs font-medium ${statusBadge(displayStatus)}`}
                       >
                         {displayStatus}
                       </span>
                     </td>
-
+                    <td className="border border-gray-300 px-3 py-2 text-center">
+                      <PriorityBadge priority={c.priority} />
+                    </td>
                     <td className="border border-gray-300 px-3 py-2 text-center">
                       {new Date(c.updatedAt).toLocaleDateString("en-GB")}
                     </td>
@@ -108,22 +146,16 @@ function Status() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-
     if (!token) {
       navigate("/login");
       return;
     }
-
     fetch(`${API_URL}/api/complaints`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
       .then((data) => {
-        if (data.success) {
-          setComplaints(data.complaints);
-        }
+        if (data.success) setComplaints(data.complaints);
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -136,11 +168,8 @@ function Status() {
     <div>
       <Navbar />
       <UserSidebar />
-
-      {/* Responsive Wrapper */}
       <div className="mt-14 p-4 sm:p-6 min-h-screen bg-gray-100 md:ml-56">
         <h1 className="text-xl font-bold mb-6 text-black">Complaint Status</h1>
-
         {loading ? (
           <p>Loading status...</p>
         ) : (
@@ -151,7 +180,6 @@ function Status() {
               navigate={navigate}
               type="pending"
             />
-
             <StatusTable
               title="Resolved Issues"
               data={resolvedIssues}

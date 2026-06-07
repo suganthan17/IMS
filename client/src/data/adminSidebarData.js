@@ -1,9 +1,4 @@
-import {
-  LayoutDashboard,
-  ClipboardList,
-  Users,
-  Edit,
-} from "lucide-react";
+import { LayoutDashboard, ClipboardList, Users, Edit } from "lucide-react";
 
 const adminSidebarData = [
   {
@@ -20,11 +15,6 @@ const adminSidebarData = [
     name: "Manage Staff",
     path: "/admin/manage-staff",
     icon: Users,
-  },
-  {
-    name: "Assign Complaints",
-    path: "/admin/assign-complaints",
-    icon: Edit,
   },
 ];
 

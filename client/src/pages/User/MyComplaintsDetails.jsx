@@ -6,6 +6,48 @@ import UserSidebar from "../../components/UserSidebar";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
+const PriorityBadge = ({ priority }) => {
+  const config = {
+    Critical: {
+      bar: "bg-red-500",
+      text: "text-red-700",
+      bg: "bg-red-50 border-red-300",
+      pulse: "animate-pulse",
+    },
+    High: {
+      bar: "bg-orange-400",
+      text: "text-orange-700",
+      bg: "bg-orange-50 border-orange-300",
+      pulse: "",
+    },
+    Medium: {
+      bar: "bg-yellow-400",
+      text: "text-yellow-700",
+      bg: "bg-yellow-50 border-yellow-300",
+      pulse: "",
+    },
+    Low: {
+      bar: "bg-green-400",
+      text: "text-green-700",
+      bg: "bg-green-50 border-green-300",
+      pulse: "",
+    },
+  };
+
+  const c = config[priority] || config["Low"];
+
+  return (
+    <div
+      className={`inline-flex items-center gap-1.5 px-2 py-1 rounded border ${c.bg} ${c.text}`}
+    >
+      <span
+        className={`w-2 h-2 rounded-full ${c.bar} ${c.pulse} inline-block`}
+      />
+      <span className="text-xs font-semibold tracking-wide">{priority}</span>
+    </div>
+  );
+};
+
 function ComplaintDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -51,20 +93,17 @@ function ComplaintDetails() {
     complaint.status === "Resolved"
       ? "bg-green-200 text-green-800"
       : complaint.status === "Assigned" || complaint.status === "In Progress"
-      ? "bg-blue-200 text-blue-800"
-      : "bg-orange-200 text-orange-800";
+        ? "bg-blue-200 text-blue-800"
+        : "bg-orange-200 text-orange-800";
 
   return (
     <div>
       <Navbar />
       <UserSidebar />
 
-      {/* Responsive Content Wrapper */}
       <div className="mt-14 p-4 sm:p-6 min-h-screen bg-gray-100 md:ml-56">
         <div className="max-w-screen-xl mx-auto">
-          <h1 className="text-xl font-bold text-black">
-            Complaint Details
-          </h1>
+          <h1 className="text-xl font-bold text-black">Complaint Details</h1>
 
           <div className="flex items-center gap-3 mt-6">
             <button
@@ -82,7 +121,6 @@ function ComplaintDetails() {
               <span>View Issue Details</span>
             </div>
 
-            
             <div className="overflow-x-auto">
               <table className="w-full text-sm border-collapse table-fixed min-w-[700px]">
                 <tbody>
@@ -137,6 +175,12 @@ function ComplaintDetails() {
 
                   <tr>
                     <td className="border border-gray-300 bg-slate-100 px-3 py-2 font-medium">
+                      Priority
+                    </td>
+                    <td className="border border-gray-300 px-3 py-2">
+                      <PriorityBadge priority={complaint.priority} />
+                    </td>
+                    <td className="border border-gray-300 bg-slate-100 px-3 py-2 font-medium">
                       Resolved Date
                     </td>
                     <td className="border border-gray-300 px-3 py-2">
@@ -175,7 +219,6 @@ function ComplaintDetails() {
                       <td className="border border-gray-300 bg-slate-100 px-3 py-2 font-medium align-top">
                         Before Image
                       </td>
-
                       <td className="border border-gray-300 px-4 py-4 text-center">
                         {complaint.beforeImage ? (
                           <img
@@ -190,11 +233,9 @@ function ComplaintDetails() {
                           "-"
                         )}
                       </td>
-
                       <td className="border border-gray-300 bg-slate-100 px-3 py-2 font-medium align-top">
                         Resolved Image
                       </td>
-
                       <td className="border border-gray-300 px-4 py-4 text-center">
                         {complaint.afterImage ? (
                           <img
@@ -214,7 +255,6 @@ function ComplaintDetails() {
                 </tbody>
               </table>
             </div>
-            
           </div>
         </div>
       </div>

@@ -5,6 +5,52 @@ import AdminSidebar from "../../components/AdminSidebar";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
+const PriorityBadge = ({ priority }) => {
+  const config = {
+    Critical: {
+      bar: "bg-red-500",
+      text: "text-red-700",
+      bg: "bg-red-50 border-red-300",
+      dot: "🔴",
+      pulse: "animate-pulse",
+    },
+    High: {
+      bar: "bg-orange-400",
+      text: "text-orange-700",
+      bg: "bg-orange-50 border-orange-300",
+      dot: "🟠",
+      pulse: "",
+    },
+    Medium: {
+      bar: "bg-yellow-400",
+      text: "text-yellow-700",
+      bg: "bg-yellow-50 border-yellow-300",
+      dot: "🟡",
+      pulse: "",
+    },
+    Low: {
+      bar: "bg-green-400",
+      text: "text-green-700",
+      bg: "bg-green-50 border-green-300",
+      dot: "🟢",
+      pulse: "",
+    },
+  };
+
+  const c = config[priority] || config["Low"];
+
+  return (
+    <div
+      className={`inline-flex items-center gap-1.5 px-2 py-1 rounded border ${c.bg} ${c.text}`}
+    >
+      <span
+        className={`w-2 h-2 rounded-full ${c.bar} ${c.pulse} inline-block`}
+      />
+      <span className="text-xs font-semibold tracking-wide">{priority}</span>
+    </div>
+  );
+};
+
 function AllComplaints() {
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -53,7 +99,6 @@ function AllComplaints() {
           <label className="text-sm font-medium text-slate-700">
             Filter by Status:
           </label>
-
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
@@ -86,7 +131,7 @@ function AllComplaints() {
               <table className="w-full text-sm border-collapse min-w-[900px]">
                 <thead className="bg-slate-100">
                   <tr>
-                    <th className="border border-gray-300 px-3 py-5 text-left">
+                    <th className="border border-gray-300 px-3 py-3 text-left">
                       #
                     </th>
                     <th className="border border-gray-300 px-3 py-3 text-left">
@@ -102,15 +147,16 @@ function AllComplaints() {
                       Status
                     </th>
                     <th className="border border-gray-300 px-3 py-3 text-center">
+                      Priority
+                    </th>
+                    <th className="border border-gray-300 px-3 py-3 text-center">
                       Date
                     </th>
                   </tr>
                 </thead>
-
                 <tbody>
                   {filteredComplaints.map((c, index) => {
                     const displayStatus = c.assignedTo ? c.status : "Pending";
-
                     return (
                       <tr
                         key={c._id}
@@ -121,29 +167,25 @@ function AllComplaints() {
                         <td className="border border-gray-300 px-3 py-3">
                           {index + 1}
                         </td>
-
                         <td className="border border-gray-300 px-3 py-3">
                           {c.category}
                         </td>
-
-                        <td className="border border-gray-300 px-3 py-2 font-medium text-slate-700">
+                        <td className="border border-gray-300 px-3 py-3 font-medium text-slate-700">
                           {c.summary}
                         </td>
-
-                        <td className="border border-gray-300 px-3 py-2">
+                        <td className="border border-gray-300 px-3 py-3">
                           {c.location}
                         </td>
-
                         <td className="border border-gray-300 px-3 py-2 text-center">
                           <span
-                            className={`px-2 py-1 rounded text-xs font-medium ${statusBadge(
-                              displayStatus,
-                            )}`}
+                            className={`px-2 py-1 rounded text-xs font-medium ${statusBadge(displayStatus)}`}
                           >
                             {displayStatus}
                           </span>
                         </td>
-
+                        <td className="border border-gray-300 px-3 py-2 text-center">
+                          <PriorityBadge priority={c.priority} />
+                        </td>
                         <td className="border border-gray-300 px-3 py-2 text-center">
                           {new Date(c.createdAt).toLocaleDateString("en-GB")}
                         </td>

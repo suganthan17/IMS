@@ -22,8 +22,6 @@ import Login from "./pages/auth/Login";
 import AdminDashboard from "./pages/Admin/AdminDashboard";
 import AllComplaints from "./pages/Admin/AllComplaints";
 import ManageStaff from "./pages/Admin/ManageStaff";
-import AssignComplaints from "./pages/Admin/AssignComplaints";
-
 /* Staff Pages */
 import StaffDashboard from "./pages/Staff/StaffDashboard";
 import AssignedComplaints from "./pages/Staff/AssignedComplaints";
@@ -128,14 +126,6 @@ function AppRoutes() {
           element={
             <ProtectedRoute role="admin">
               <ManageStaff />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/assign-complaints"
-          element={
-            <ProtectedRoute role="admin">
-              <AssignComplaints />
             </ProtectedRoute>
           }
         />

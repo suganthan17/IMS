@@ -1,5 +1,6 @@
 import Complaint from "../models/Complaint.js";
-
+import User from "../models/User.js";
+import { assignStaffWithAI } from "../utils/assignStaffWithAI.js";
 export const createComplaint = async (req, res) => {
   try {
     const { category, summary, location, description } = req.body;
@@ -11,13 +12,58 @@ export const createComplaint = async (req, res) => {
       });
     }
 
+    const staffList = await User.find({
+      role: "maintenance",
+    });
+
+    const staffData = await Promise.all(
+      staffList.map(async (staff) => {
+        const activeCount = await Complaint.countDocuments({
+          assignedTo: staff._id,
+          status: { $ne: "Resolved" },
+        });
+
+        return {
+          _id: staff._id,
+          name: staff.name,
+          email: staff.email,
+          expertise: staff.expertise,
+          activeCount,
+        };
+      }),
+    );
+
+    let selectedStaff = null;
+    let priority = "Medium";
+    let aiCategory = category;
+
+    if (staffData.length > 0) {
+      const aiResult = await assignStaffWithAI(
+        {
+          category,
+          summary,
+          description,
+        },
+        staffData,
+      );
+
+      selectedStaff = staffData.find((s) => s.email === aiResult.email) || null;
+
+      priority = aiResult.priority || "Medium";
+      aiCategory = aiResult.aiCategory || category;
+    }
+
     const complaint = await Complaint.create({
       category,
+      aiCategory,
+      priority,
       summary,
       location,
       description,
       userId: req.user._id,
-      beforeImage: req.file ? req.file.path : null,
+      assignedTo: selectedStaff?._id || null,
+      status: selectedStaff ? "Assigned" : "Pending",
+      beforeImage: req.file?.path || null,
     });
 
     res.status(201).json({
@@ -26,13 +72,14 @@ export const createComplaint = async (req, res) => {
       complaint,
     });
   } catch (error) {
+    console.error(error);
+
     res.status(500).json({
       success: false,
       message: error.message,
     });
   }
 };
-
 export const getAllComplaints = async (req, res) => {
   try {
     let complaints;
